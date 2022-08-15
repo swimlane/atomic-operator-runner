@@ -4,12 +4,15 @@ disable_existing_loggers: False
 formatters:
     simple:
         format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    colored_console:
+        (): atomic_operator_runner.utils.logger.CustomFormatter
+        fmt: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 handlers:
     console:
         class: logging.StreamHandler
         level: DEBUG
-        formatter: simple
+        formatter: colored_console
         stream: ext://sys.stdout
 
     info_file_handler:
