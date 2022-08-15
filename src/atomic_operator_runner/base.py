@@ -70,9 +70,7 @@ class Base(metaclass=LoggingBase):
         if return_code == 127:
             error_string = f"\n\nCommand Not Found: {command} returned exit code {return_code}: \n"
             error_string += f"Errors: {self.clean_output(errors)}/nOutput: {output}"
-            return_dict.update({
-                "error": error_string
-            })
+            return_dict.update({"error": error_string})
             self.__logger.warning(return_dict["error"])
         if output or errors:
             if output:
