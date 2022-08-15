@@ -1,5 +1,4 @@
 """Logger metaclass and custom formatter."""
-# -*- coding: utf-8 -*-
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import logging.config
@@ -89,7 +88,7 @@ class LoggingBase(type):
         if value:
             path = value
         if os.path.exists(os.path.abspath(path)):
-            with open(path, "rt") as f:
+            with open(path) as f:
                 config = yaml.safe_load(f.read())
             logger = logging.config.dictConfig(config)
         else:
