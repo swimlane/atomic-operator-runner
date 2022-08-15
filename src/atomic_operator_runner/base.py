@@ -68,11 +68,12 @@ class Base(metaclass=LoggingBase):
         """
         return_dict = {}
         if return_code == 127:
-            return_dict[
-                "error"
-            ] = f"\n\nCommand Not Found: {command} returned exit code {return_code}: \nErrors: {self.clean_output(errors)}/nOutput: {output}"
+            error_string = f"\n\nCommand Not Found: {command} returned exit code {return_code}: \n"
+            error_string += f"Errors: {self.clean_output(errors)}/nOutput: {output}"
+            return_dict.update({
+                "error": error_string
+            })
             self.__logger.warning(return_dict["error"])
-            return return_dict
         if output or errors:
             if output:
                 return_dict["output"] = self.clean_output(output)
