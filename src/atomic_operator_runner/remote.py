@@ -5,19 +5,11 @@
 from typing import Dict
 
 import paramiko
-from paramiko.ssh_exception import (
-    BadAuthenticationType,
-    NoValidConnectionsError,
-    AuthenticationException,
-    PasswordRequiredException,
-)
-from pypsrp.client import Client
-from pypsrp.exceptions import AuthenticationError, WinRMTransportError, WSManFaultError
 
-from requests.exceptions import RequestException
+from pypsrp.client import Client
 
 from .base import Base
-from .utils.exceptions import IncorrectExecutorError
+from .utils.exceptions import IncorrectExecutorError, RemoteRunnerExecutionError
 
 
 class RemoteRunner(Base):
@@ -75,6 +67,7 @@ class RemoteRunner(Base):
 
         Raises:
             IncorrectExecutorError: Raised when the provided executor is unknown.
+            RemoteRunnerExecutionError: Raised when an error occurs running command remotely.
 
         Returns:
             Dict[str]: Returns a dictionary of output and error keys.
@@ -110,58 +103,6 @@ class RemoteRunner(Base):
                 raise IncorrectExecutorError(
                     f"The provided executor of '{executor}' is not one of sh, bash, powershell or cmd"
                 )
-        except NoValidConnectionsError as ec:
-            error_string = f"SSH Error - Unable to connect to {Base.hostname} - Received {type(ec).__name__}"
-            self.__logger.debug(f"Full stack trace: {ec}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except AuthenticationException as ea:
-            error_string = f"SSH Error - Unable to authenticate to host - {Base.hostname} "
-            error_string += f"- Received {type(ea).__name__}"
-            self.__logger.debug(f"Full stack trace: {ea}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except BadAuthenticationType as eb:
-            error_string = f"SSH Error - Unable to use provided authentication type to host - {Base.hostname} "
-            error_string += f"- Received {type(eb).__name__}"
-            self.__logger.debug(f"Full stack trace: {eb}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except PasswordRequiredException as ep:
-            error_string = f"SSH Error - Must provide a password to authenticate to host - {Base.hostname} "
-            error_string += f"- Received {type(ep).__name__}"
-            self.__logger.debug(f"Full stack trace: {ep}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except AuthenticationError as ewa:
-            error_string = (
-                f"Windows Error - Unable to authenticate to host - {Base.hostname} - Received {type(ewa).__name__}"
-            )
-            self.__logger.debug(f"Full stack trace: {ewa}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except WinRMTransportError as ewt:
-            error_string = f"Windows Error - Error occurred during transport on host - {Base.hostname} "
-            error_string += f"- Received {type(ewt).__name__}"
-            self.__logger.debug(f"Full stack trace: {ewt}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except WSManFaultError as ewf:
-            error_string = f"Windows Error - Received WSManFault information from host - {Base.hostname} "
-            error_string += f"- Received {type(ewf).__name__}"
-            self.__logger.debug(f"Full stack trace: {ewf}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except RequestException as re:
-            error_string = f"Request Exception - Connection Error to the configured host - {Base.hostname} "
-            error_string += f"- Received {type(re).__name__}"
-            self.__logger.debug(f"Full stack trace: {re}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
-        except Exception as ex:
-            error_string = f"Unknown Error - Received an unknown error from host - {Base.hostname} "
-            error_string += f"- Received {type(ex).__name__}"
-            self.__logger.debug(f"Full stack trace: {ex}")
-            self.__logger.warning(error_string)
-            return {"error": error_string}
+        except Exception as e:
+            raise RemoteRunnerExecutionError(exception=e)
         return return_dict
