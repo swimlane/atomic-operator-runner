@@ -8,6 +8,7 @@ from .utils.logger import LoggingBase
 
 
 class Base(metaclass=LoggingBase):
+    """Base class to all other classes within this project."""
 
     COMMAND_MAP = {
         "command_prompt": {
@@ -42,7 +43,7 @@ class Base(metaclass=LoggingBase):
     _run_type = None
 
     def clean_output(self, data):
-        """Decodes data and strips CLI garbage from returned outputs and errors
+        """Decodes data and strips CLI garbage from returned outputs and errors.
 
         Args:
             data (str): A output or error returned from subprocess
@@ -62,7 +63,7 @@ class Base(metaclass=LoggingBase):
         return data
 
     def print_process_output(self, command: str, return_code: int, output, errors):
-        """Outputs the appropriate outputs if they exists to the console and log files
+        """Outputs the appropriate outputs if they exists to the console and log files.
 
         Args:
             command (str): The command which was ran by subprocess
