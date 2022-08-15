@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# Copyright: (c) 2022, Swimlane <info@swimlane.com>
+# MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import re
 
 from .utils.logger import LoggingBase
@@ -65,6 +68,9 @@ class Base(metaclass=LoggingBase):
             return_code (int): The return code from subprocess
             output (bytes): Output from subprocess which is typically in bytes
             errors (bytes): Errors from subprocess which is typically in bytes
+
+        Returns:
+            dict: A dictionary containing the output and any errors.
         """
         return_dict = {}
         if return_code == 127:
