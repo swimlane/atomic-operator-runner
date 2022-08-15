@@ -10,7 +10,7 @@ import yaml
 
 
 class CustomFormatter(Formatter):
-    """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
+    """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629."""
 
     grey = "\x1b[38;21m"
     blue = "\x1b[38;5;39m"
@@ -20,6 +20,7 @@ class CustomFormatter(Formatter):
     reset = "\x1b[0m"
 
     def __init__(self, fmt):
+        """Custom formatter for console output."""
         super().__init__()
         self.fmt = fmt
         self.FORMATS = {
@@ -31,23 +32,38 @@ class CustomFormatter(Formatter):
         }
 
     def format(self, record):
+        """Used to format a log record object."""
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
         return formatter.format(record)
 
 
 class DebugFileHandler(FileHandler):
-    def __init__(self, filename, mode="a", encoding=None, delay=False):
+    """DebugFileHander."""
+
+    def __init__(self, filename: str, mode: str = "a", encoding: str = None, delay: bool = False):
+        """Used to debug logging.
+
+        Args:
+            filename (str): The filename to log to.
+            mode (str, optional): The mode to open the file. Defaults to "a".
+            encoding (_type_, optional): The encoding to use. Defaults to None.
+            delay (bool, optional): Delay writing to log file. Defaults to False.
+        """
         super().__init__(filename, mode, encoding, delay)
 
     def emit(self, record):
+        """Used to write a record to a file."""
         if not record.levelno == DEBUG:
             return
         super().emit(record)
 
 
 class LoggingBase(type):
+    """Logging metaclass."""
+
     def __init__(cls, *args):
+        """Logging base metaclass."""
         super().__init__(*args)
         cls.setup_logging()
 
@@ -65,7 +81,7 @@ class LoggingBase(type):
         default_level=logging.INFO,
         env_key="LOG_CFG",
     ):
-        """Setup logging configuration"""
+        """Setup logging configuration."""
         path = os.path.abspath(os.path.expanduser(os.path.expandvars(default_path)))
         value = os.getenv(env_key, None)
         if value:
@@ -76,3 +92,4 @@ class LoggingBase(type):
             logger = logging.config.dictConfig(config)
         else:
             logger = logging.basicConfig(level=default_level)
+        return logger

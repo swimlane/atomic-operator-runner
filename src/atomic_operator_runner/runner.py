@@ -5,6 +5,7 @@
 from typing import Dict, NoReturn
 
 from .base import Base
+from .utils.exceptions import IncorrectPlatformError
 
 
 class Runner(Base):
@@ -22,8 +23,26 @@ class Runner(Base):
         ssh_port: int = 22,
         ssh_timeout: int = 5,
     ) -> NoReturn:
+        """Used to run commands either locally or remotely.
+
+        The provided configuration options determine where the provided command(s) will be ran.
+
+        Args:
+            platform (str): The platform the commands will be ran against. Options are macos, linux, windows and aws.
+            hostname (str, optional): The hostname to run commands remotely on. Defaults to None.
+            username (str, optional): The username to connect to the remote host on. Defaults to None.
+            password (str, optional): The password used to connect to the remote host. Defaults to None.
+            verify_ssl (bool, optional): Whether or not to verify SSL/TLS. Defaults to False.
+            ssh_key_path (str, optional): A string path to an ssh key. Defaults to None.
+            private_key_string (str, optional): The private key string value for ssh connection. Defaults to None.
+            ssh_port (int, optional): The port used for SSH connections. Defaults to 22.
+            ssh_timeout (int, optional): The timeout for SSH connections. Defaults to 5.
+
+        Raises:
+            IncorrectPlatformError: Raised when the provided platform is not a correct option.
+        """
         if platform.lower() not in ["macos", "linux", "windows", "aws"]:
-            raise Exception()
+            raise IncorrectPlatformError(provided_platform=platform)
         Base.platform = platform.lower()
         Base._run_type = "remote" if hostname else "local"
         Base.hostname = hostname
@@ -59,4 +78,5 @@ class Runner(Base):
             return RemoteRunner().run(executor=executor, command=command)
 
     def copy(self):
+        """Used to copy files from one system to another."""
         pass

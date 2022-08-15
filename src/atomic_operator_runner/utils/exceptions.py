@@ -3,6 +3,7 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 
+from typing import NoReturn
 from paramiko.ssh_exception import (
     BadAuthenticationType,
     NoValidConnectionsError,
@@ -19,10 +20,23 @@ class IncorrectExecutorError(Exception):
     pass
 
 
+class IncorrectPlatformError(Exception):
+    """Raised when the incorrect platform is provided."""
+
+    def __init__(self, provided_platform) -> NoReturn:
+        """Raises when the provided platforms is not correct."""
+        from ..base import Base
+
+        Base.__logger.critical(
+            f"The provided platform of '{provided_platform}' is not one of macos, linux, windows or aws"
+        )
+
+
 class RemoteRunnerExecutionError(Exception):
     """Raised when an error occurs executing a command remotely."""
 
-    def __init__(self, exception) -> None:
+    def __init__(self, exception) -> NoReturn:
+        """Raises when an error occurs running a command remotely."""
         from ..base import Base
 
         if exception is NoValidConnectionsError:

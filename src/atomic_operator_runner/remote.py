@@ -52,11 +52,7 @@ class RemoteRunner(Base):
                     timeout=Base.ssh_timeout,
                 )
 
-    def run(
-        self,
-        executor: str,
-        command: str,
-    ) -> Dict[str]:
+    def run(self, executor: str, command: str) -> Dict[str]:
         """Runs the provided command remotely using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd
@@ -104,5 +100,5 @@ class RemoteRunner(Base):
                     f"The provided executor of '{executor}' is not one of sh, bash, powershell or cmd"
                 )
         except Exception as e:
-            raise RemoteRunnerExecutionError(exception=e)
+            raise RemoteRunnerExecutionError(exception=e) from e
         return return_dict
