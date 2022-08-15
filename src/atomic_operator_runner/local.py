@@ -18,10 +18,10 @@ class LocalRunner(Base):
         Args:
             executor (str): The executor to use when executing the provided command string.
             command (str): The command string to run.
-            timeout (int): Timeout when running a command. Defaults to 5.
-            shell (bool): Whether to spawn a new shell or not. Defaults to False.
-            env (dict): Environment to use including environmental variables.. Defaults to os.environ.
-            cwd (str): The current working directory. Defaults to None.
+            timeout (int, optional): Timeout when running a command. Defaults to 5.
+            shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
+            env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
+            cwd (str, optional): The current working directory. Defaults to None.
 
         Returns:
             Dict[str]: Returns a dictionary of results from running the provided command.
