@@ -9,13 +9,7 @@ class LocalRunner(Base):
     """Used to run commands on a local system."""
 
     def run(
-        self, 
-        executor: str, 
-        command: str, 
-        timeout: int = 5, 
-        shell: bool = False, 
-        env=os.environ, 
-        cwd: str = None
+        self, executor: str, command: str, timeout: int = 5, shell: bool = False, env=os.environ, cwd: str = None
     ) -> Dict[str]:
         """Runs the provided command string using the provided executor.
 
