@@ -4,7 +4,9 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import logging.config
 import os
-from logging import DEBUG, FileHandler, Formatter
+from logging import DEBUG
+from logging import FileHandler
+from logging import Formatter
 
 import yaml
 

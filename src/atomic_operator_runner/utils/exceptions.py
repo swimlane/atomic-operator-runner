@@ -4,13 +4,14 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 
 from typing import NoReturn
-from paramiko.ssh_exception import (
-    BadAuthenticationType,
-    NoValidConnectionsError,
-    AuthenticationException,
-    PasswordRequiredException,
-)
-from pypsrp.exceptions import AuthenticationError, WinRMTransportError, WSManFaultError
+
+from paramiko.ssh_exception import AuthenticationException
+from paramiko.ssh_exception import BadAuthenticationType
+from paramiko.ssh_exception import NoValidConnectionsError
+from paramiko.ssh_exception import PasswordRequiredException
+from pypsrp.exceptions import AuthenticationError
+from pypsrp.exceptions import WinRMTransportError
+from pypsrp.exceptions import WSManFaultError
 from requests.exceptions import RequestException
 
 

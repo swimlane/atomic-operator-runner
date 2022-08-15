@@ -5,11 +5,11 @@
 from typing import Dict
 
 import paramiko
-
 from pypsrp.client import Client
 
 from .base import Base
-from .utils.exceptions import IncorrectExecutorError, RemoteRunnerExecutionError
+from .utils.exceptions import IncorrectExecutorError
+from .utils.exceptions import RemoteRunnerExecutionError
 
 
 class RemoteRunner(Base):
