@@ -1,0 +1,18 @@
+{
+  "_copy_without_render": [
+    ".github/workflows/pre-commit.yml",
+    ".github/workflows/tests.yml"
+  ],
+  "_output_dir": "/Users/josh.rickard/_Swimlane",
+  "_template": "gh:msadministrator/cookiecutter-hypermodern-python",
+  "author": "Josh Rickard",
+  "copyright_year": "2022",
+  "development_status": "Development Status :: 2 - Pre-Alpha",
+  "email": "rickardja@live.com",
+  "friendly_name": "atomic-operator-runner",
+  "github_user": "MSAdministrator",
+  "license": "MIT",
+  "package_name": "atomic_operator_runner",
+  "project_name": "atomic-operator-runner",
+  "version": "0.0.12"
+}
