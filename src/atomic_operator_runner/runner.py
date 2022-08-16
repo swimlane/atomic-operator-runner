@@ -1,7 +1,9 @@
 """Runs the provided command string locally or remotely."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-from typing import Dict, Optional, Union
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from .base import Base
 from .utils.exceptions import IncorrectPlatformError

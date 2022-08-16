@@ -3,9 +3,10 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import logging.config
 import os
-from logging import DEBUG, LogRecord, Logger
+from logging import DEBUG
 from logging import FileHandler
 from logging import Formatter
+from logging import LogRecord
 from typing import Optional
 
 import yaml

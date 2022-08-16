@@ -1,9 +1,9 @@
 """Runs a command on a local system."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-import os
 import subprocess
-from typing import Dict, Optional
+from typing import Dict
+from typing import Optional
 
 from .base import Base
 
