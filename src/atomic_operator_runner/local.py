@@ -3,7 +3,7 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import os
 import subprocess
-from typing import Dict
+from typing import Dict, Optional
 
 from .base import Base
 
@@ -12,8 +12,14 @@ class LocalRunner(Base):
     """Used to run commands on a local system."""
 
     def run(
-        self, executor: str, command: str, timeout: int = 5, shell: bool = False, env=os.environ, cwd: str = None
-    ) -> Dict[str]:
+        self,
+        executor: str,
+        command: str,
+        timeout: int = 5,
+        shell: bool = False,
+        env: Optional[Dict[str, str]] = None,
+        cwd: Optional[str] = None,
+    ) -> Dict[str, str]:
         """Runs the provided command string using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd

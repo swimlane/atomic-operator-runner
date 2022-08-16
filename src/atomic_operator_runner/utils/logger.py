@@ -3,9 +3,10 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import logging.config
 import os
-from logging import DEBUG
+from logging import DEBUG, LogRecord, Logger
 from logging import FileHandler
 from logging import Formatter
+from typing import Optional
 
 import yaml
 
@@ -20,7 +21,7 @@ class CustomFormatter(Formatter):
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
 
-    def __init__(self, fmt):
+    def __init__(self, fmt: str) -> None:
         """Custom formatter for console output."""
         super().__init__()
         self.fmt = fmt
@@ -32,7 +33,7 @@ class CustomFormatter(Formatter):
             logging.CRITICAL: self.bold_red + self.fmt + self.reset,
         }
 
-    def format(self, record):
+    def format(self, record: LogRecord) -> str:
         """Used to format a log record object."""
         log_fmt = self.FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt)
@@ -42,18 +43,18 @@ class CustomFormatter(Formatter):
 class DebugFileHandler(FileHandler):
     """DebugFileHander."""
 
-    def __init__(self, filename: str, mode: str = "a", encoding: str = None, delay: bool = False):
+    def __init__(self, filename: str, mode: str = "a", encoding: Optional[str] = None, delay: bool = False) -> None:
         """Used to debug logging.
 
         Args:
             filename (str): The filename to log to.
             mode (str, optional): The mode to open the file. Defaults to "a".
-            encoding (_type_, optional): The encoding to use. Defaults to None.
+            encoding (str, optional): The encoding to use. Defaults to None.
             delay (bool, optional): Delay writing to log file. Defaults to False.
         """
         super().__init__(filename, mode, encoding, delay)
 
-    def emit(self, record):
+    def emit(self, record: LogRecord) -> None:
         """Used to write a record to a file."""
         if not record.levelno == DEBUG:
             return
@@ -63,7 +64,7 @@ class DebugFileHandler(FileHandler):
 class LoggingBase(type):
     """Logging metaclass."""
 
-    def __init__(cls, *args):
+    def __init__(cls, *args: str) -> None:
         """Logging base metaclass."""
         super().__init__(*args)
         cls.setup_logging()
@@ -78,10 +79,10 @@ class LoggingBase(type):
 
     def setup_logging(
         cls,
-        default_path="./aqueduct/data/logging.yml",
-        default_level=logging.INFO,
-        env_key="LOG_CFG",
-    ):
+        default_path: str = "./aqueduct/data/logging.yml",
+        default_level: int = logging.INFO,
+        env_key: str = "LOG_CFG",
+    ) -> None:
         """Setup logging configuration."""
         path = os.path.abspath(os.path.expanduser(os.path.expandvars(default_path)))
         value = os.getenv(env_key, None)
@@ -90,7 +91,6 @@ class LoggingBase(type):
         if os.path.exists(os.path.abspath(path)):
             with open(path) as f:
                 config = yaml.safe_load(f.read())
-            logger = logging.config.dictConfig(config)
+            logging.config.dictConfig(config)
         else:
-            logger = logging.basicConfig(level=default_level)
-        return logger
+            logging.basicConfig(level=default_level)

@@ -1,8 +1,7 @@
 """Runs the provided command string locally or remotely."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-from typing import Dict
-from typing import NoReturn
+from typing import Dict, Optional, Union
 
 from .base import Base
 from .utils.exceptions import IncorrectPlatformError
@@ -14,15 +13,15 @@ class Runner(Base):
     def __init__(
         self,
         platform: str,
-        hostname: str = None,
-        username: str = None,
-        password: str = None,
+        hostname: None = None,
+        username: None = None,
+        password: None = None,
         verify_ssl: bool = False,
-        ssh_key_path: str = None,
-        private_key_string: str = None,
+        ssh_key_path: None = None,
+        private_key_string: None = None,
         ssh_port: int = 22,
         ssh_timeout: int = 5,
-    ) -> NoReturn:
+    ) -> None:
         """Used to run commands either locally or remotely.
 
         The provided configuration options determine where the provided command(s) will be ran.
@@ -54,7 +53,9 @@ class Runner(Base):
         Base.ssh_port = ssh_port
         Base.ssh_timeout = ssh_timeout
 
-    def run(self, command: str, executor: str, cwd: str = None, elevation_required: bool = False) -> Dict[str]:
+    def run(
+        self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
+    ) -> Union[Dict[str, object], Dict[str, str]]:
         """Runs the provided command either locally or remotely based on the provided configuration information.
 
         Args:
@@ -77,6 +78,6 @@ class Runner(Base):
 
             return RemoteRunner().run(executor=executor, command=command)
 
-    def copy(self):
+    def copy(self) -> None:
         """Used to copy files from one system to another."""
         pass

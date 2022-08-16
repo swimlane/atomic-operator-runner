@@ -14,7 +14,7 @@ from .utils.exceptions import RemoteRunnerExecutionError
 class RemoteRunner(Base):
     """Used to run command remotely."""
 
-    def _create_client(self):
+    def _create_client(self) -> None:
         """Creates a client for the defined platform operating system."""
         if Base.platform == "windows":
             self._client = Client(
@@ -51,7 +51,7 @@ class RemoteRunner(Base):
                     timeout=Base.ssh_timeout,
                 )
 
-    def run(self, executor: str, command: str) -> Dict[str]:
+    def run(self, executor: str, command: str) -> Dict[str, object]:
         """Runs the provided command remotely using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd
@@ -65,7 +65,7 @@ class RemoteRunner(Base):
             RemoteRunnerExecutionError: Raised when an error occurs running command remotely.
 
         Returns:
-            Dict[str]: Returns a dictionary of output and error keys.
+            Dict: Returns a dictionary of output and error keys.
         """
         return_dict = {}
         self._create_client()
