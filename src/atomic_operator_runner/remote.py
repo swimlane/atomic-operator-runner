@@ -14,6 +14,54 @@ from .utils.exceptions import RemoteRunnerExecutionError
 class RemoteRunner(Base):
     """Used to run command remotely."""
 
+    def _parse_data_record(self, data):
+        """Parses the InformationRecord data out of the response stream."""
+        return {
+            "message_data": str(data.message_data),
+            "source": data.source,
+            "time_generated": data.time_generated,
+            "user": data.user,
+            "computer": data.computer,
+            "pid": data.pid,
+            "native_thread_id": data.native_thread_id,
+            "managed_thread_id": data.managed_thread_id,
+        }
+
+    def __handle_windows_streams(self, stream):
+        """Handles processing of all types of message strings from windows systems."""
+        return_list = []
+        for item in stream.error:
+            if item is not None:
+                return_list.append({
+                    'type': 'error',
+                    'value': self._parse_data_record(item)
+                })
+        for item in stream.debug:
+            if item is not None:
+                return_list.append({
+                    'type': 'debug',
+                    'value': self._parse_data_record(item)
+                })
+        for item in stream.information:
+            if item is not None:
+                return_list.append({
+                    'type': 'information',
+                    'value': self._parse_data_record(item)
+                })
+        for item in stream.verbose:
+            if item is not None:
+                return_list.append({
+                    'type': 'verbose',
+                    'value': self._parse_data_record(item)
+                })
+        for item in stream.warning:
+            if item is not None:
+                return_list.append({
+                    'type': 'warning',
+                    'value': self._parse_data_record(item)
+                })
+        return return_list
+
     def _create_client(self) -> None:
         """Creates a client for the defined platform operating system."""
         if Base.platform == "windows":
@@ -72,20 +120,15 @@ class RemoteRunner(Base):
         try:
             if executor == "powershell":
                 output, streams, had_errors = self._client.execute_ps(command)
-                return_dict.update(
-                    {
-                        "output": output,
-                        "error": streams,
-                    }
+                return self.print_process_output(
+                    command=command, 
+                    return_code=0 if had_errors is False else had_errors,
+                    output=output, 
+                    errors=self.__handle_windows_streams(stream=streams)
                 )
             elif executor == "cmd":
                 stdout, stderr, rc = self._client.execute_cmd(command)
-                return_dict.update(
-                    {
-                        "output": stdout,
-                        "error": stderr,
-                    }
-                )
+                return self.print_process_output(command=command, return_code=rc, output=stdout, errors=stderr)
             elif executor == "ssh":
                 stdin, stdout, stderr = self._client.exec_command(command=command)
                 return_dict.update(
