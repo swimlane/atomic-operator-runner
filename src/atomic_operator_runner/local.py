@@ -35,8 +35,9 @@ class LocalRunner(Base):
         Returns:
             Dict[str]: Returns a dictionary of results from running the provided command.
         """
+        self.__logger.debug("Starting a subprocess on the local system.")
         process = subprocess.Popen(
-            executor=executor,
+            executor,
             shell=shell,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -45,6 +46,7 @@ class LocalRunner(Base):
             cwd=cwd,
         )
         try:
+            self.__logger.info(f"Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             return self.print_process_output(command=command, return_code=process.returncode, output=outs, errors=errs)
         except subprocess.TimeoutExpired as e:
