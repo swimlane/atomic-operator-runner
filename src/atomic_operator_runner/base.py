@@ -73,7 +73,11 @@ class Base(metaclass=LoggingBase):
         Returns:
             dict: A dictionary containing the output and any errors.
         """
-        return_dict = {}
+        self.__logger.debug(f"Processing command output.")
+        return_dict = {
+            "output": None,
+            "error": None,
+        }
         if errors:
             cleaned_errors = self.clean_output(errors)
         else:
