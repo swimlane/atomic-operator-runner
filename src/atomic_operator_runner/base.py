@@ -2,9 +2,11 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import re
+import platform
 from typing import Dict
 from typing import Optional
 
+from .models import RunnerResponse
 from .utils.logger import LoggingBase
 
 
@@ -42,6 +44,7 @@ class Base(metaclass=LoggingBase):
     ssh_timeout: Optional[int] = 5
     platform: Optional[str] = None
     _run_type: Optional[str] = None
+    response = RunnerResponse()
 
     def clean_output(self, data: bytes) -> str:
         """Decodes data and strips CLI garbage from returned outputs and errors.
