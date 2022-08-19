@@ -1,8 +1,8 @@
 """Base class for all classes in this project."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-import re
 import platform
+import re
 from typing import Dict
 from typing import Optional
 
@@ -76,7 +76,7 @@ class Base(metaclass=LoggingBase):
         Returns:
             dict: A dictionary containing the output and any errors.
         """
-        self.__logger.debug(f"Processing command output.")
+        self.__logger.debug("Processing command output.")
         return_dict = {
             "output": None,
             "error": None,
@@ -104,7 +104,7 @@ class Base(metaclass=LoggingBase):
         return return_dict
 
     def get_local_system_platform(self) -> str:
-        """Identifies the local systems operating system platform
+        """Identifies the local systems operating system platform.
 
         Returns:
             str: The current/local systems operating system platform

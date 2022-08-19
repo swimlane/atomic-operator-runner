@@ -13,10 +13,10 @@ class AWSRunner(Base):
     """Used to run commands on a Amazon Web Services system."""
 
     def _check_for_aws_cli(self):
-        self.__logger.debug('Checking to see if aws cli is installed.')
-        response = self.execute_process(command='aws --version', executor=self._get_executor_command(), cwd=os.getcwd())
-        if response and response.get('error'):
-            self.__logger.warning(response['error'])
+        self.__logger.debug("Checking to see if aws cli is installed.")
+        response = self.execute_process(command="aws --version", executor=self._get_executor_command(), cwd=os.getcwd())
+        if response and response.get("error"):
+            self.__logger.warning(response["error"])
         return response
 
     def _run(
@@ -95,23 +95,9 @@ class AWSRunner(Base):
             Dict[str]: Returns a dictionary of results from running the provided command.
         """
         self.__logger.info("Checking for AWS CLI tools...")
-        response = self._run(
-            executor=executor,
-            command="aws --version",
-            timeout=timeout,
-            shell=shell,
-            env=env,
-            cwd=cwd
-        )
+        response = self._run(executor=executor, command="aws --version", timeout=timeout, shell=shell, env=env, cwd=cwd)
         if response and response.get("error"):
             self.__logger.warning(response.get("error"))
             return response
         self.__logger.info("AWS CLI tools found. Starting to run command...")
-        return self._run(
-            executor=executor,
-            command=command,
-            timeout=timeout,
-            shell=shell,
-            env=env,
-            cwd=cwd
-        )
+        return self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)

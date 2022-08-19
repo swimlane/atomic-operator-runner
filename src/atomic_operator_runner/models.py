@@ -1,10 +1,16 @@
+"""Models to standardize output from this package."""
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 
 class BaseRecord(BaseModel):
+    """Base record model used by Remote communications."""
+
     type: Optional[str] = Field(alias="record-type")
     message_data: Optional[str] = Field(alias="message")
     source: Optional[str]
@@ -16,12 +22,16 @@ class BaseRecord(BaseModel):
 
 
 class TargetEnvironment(BaseModel):
+    """Environmental model."""
+
     platform: Optional[str]
     hostname: Optional[str]
     user: Optional[str]
 
 
 class RunnerResponse(BaseModel):
+    """Model representing common output data."""
+
     environment: Optional[TargetEnvironment]
     command: Optional[str]
     executor: Optional[str]

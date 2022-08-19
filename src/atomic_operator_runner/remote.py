@@ -19,7 +19,7 @@ class RemoteRunner(Base):
         """Parses the InformationRecord data out of the response stream."""
         extra_dict = {}
         for i in dir(data):
-            if not i.startswith('_'):
+            if not i.startswith("_"):
                 extra_dict[i] = str(getattr(data, i))
         if hasattr(data, "message_data"):
             message = data.message_data
@@ -111,12 +111,12 @@ class RemoteRunner(Base):
             if executor == "powershell":
                 output, streams, had_errors = self._client.execute_ps(command)
                 self.response.output = output
-                self.response.return_code = 0 if had_errors is False else had_errors 
+                self.response.return_code = 0 if had_errors is False else had_errors
                 return self.print_process_output(
                     command=command,
                     return_code=self.response.return_code,
                     output=output,
-                    errors=self.__handle_windows_streams(stream=streams)
+                    errors=self.__handle_windows_streams(stream=streams),
                 )
             elif executor == "cmd":
                 stdout, stderr, rc = self._client.execute_cmd(command)

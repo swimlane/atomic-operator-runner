@@ -46,7 +46,7 @@ class LocalRunner(Base):
             cwd=cwd,
         )
         try:
-            self.__logger.info(f"Running command now.")
+            self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             # Adding details to our object response object
             self.response.return_code = process.returncode

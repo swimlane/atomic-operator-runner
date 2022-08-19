@@ -9,7 +9,8 @@ from typing import Optional
 from typing import Union
 
 from .base import Base
-from .models import RunnerResponse, TargetEnvironment
+from .models import RunnerResponse
+from .models import TargetEnvironment
 from .utils.exceptions import IncorrectPlatformError
 
 
@@ -63,8 +64,8 @@ class Runner(Base):
             environment=TargetEnvironment(
                 platform=Base.platform,
                 hostname=Base.hostname if Base.hostname else platform.node(),
-                user=Base.username if Base.username else os.getlogin()
-            )
+                user=Base.username if Base.username else os.getlogin(),
+            ),
         )
         atexit.register(self._return_response)
 
