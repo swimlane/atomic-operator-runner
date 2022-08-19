@@ -3,8 +3,10 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import atexit
 import os
+import platform
 from datetime import datetime
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -16,6 +18,8 @@ from .utils.exceptions import IncorrectPlatformError
 
 class Runner(Base):
     """Runs the provided command string locally or remotely."""
+
+    responses: List[RunnerResponse] = []
 
     def __init__(
         self,
@@ -59,14 +63,6 @@ class Runner(Base):
         Base.private_key_string = private_key_string
         Base.ssh_port = ssh_port
         Base.ssh_timeout = ssh_timeout
-        Base.response = RunnerResponse(
-            start_timestamp=datetime.now(),
-            environment=TargetEnvironment(
-                platform=Base.platform,
-                hostname=Base.hostname if Base.hostname else platform.node(),
-                user=Base.username if Base.username else os.getlogin(),
-            ),
-        )
         atexit.register(self._return_response)
 
     def _return_response(self):
@@ -87,10 +83,17 @@ class Runner(Base):
         Returns:
             Dict[str]: Returns a dictionary of the command results, including any errors.
         """
+        Base.response = RunnerResponse(
+            start_timestamp=datetime.now(),
+            environment=TargetEnvironment(
+                platform=Base.platform,
+                hostname=Base.hostname if Base.hostname else platform.node(),
+                user=Base.username if Base.username else os.getlogin(),
+            ),
+        )
         if elevation_required:
             command = f"{self.ELEVATION_COMMAND_MAP.get(executor)} {command}"
-        Base.response.command = command
-        Base.response.executor = executor
+        Base.response.elevation_required = elevation_required
         if Base._run_type == "local":
             from .local import LocalRunner
 
@@ -100,6 +103,7 @@ class Runner(Base):
 
             RemoteRunner().run(executor=executor, command=command)
         atexit.unregister(self._return_response)
+        self.responses.append(self.response)
         return self.response.json()
 
     def copy(self) -> None:

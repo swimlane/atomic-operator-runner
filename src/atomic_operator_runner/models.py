@@ -18,7 +18,7 @@ class BaseRecord(BaseModel):
     pid: Optional[int] = Field(alias="process-id")
     native_thread_id: Optional[int] = Field(alias="native-thread-id")
     managed_thread_id: Optional[int] = Field(alias="managed-thread-id")
-    extra: Optional[Dict]
+    extra: Optional[Dict[str, str]]
 
 
 class TargetEnvironment(BaseModel):
@@ -38,7 +38,6 @@ class RunnerResponse(BaseModel):
     elevation_required: Optional[bool]
     start_timestamp: Optional[datetime]
     end_timestamp: Optional[datetime]
-    return_code: Optional[str] or Optional[int] = Field(alias="return-code")
+    return_code: Optional[int] = Field(alias="return-code")
     output: Optional[str]
-    errors: Optional[str]
     records: Optional[List[BaseRecord]]

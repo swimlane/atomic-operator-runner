@@ -1,7 +1,6 @@
 """Runs a command on a local system."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-import os
 import subprocess
 from typing import Dict
 from typing import Optional
@@ -11,13 +10,6 @@ from .base import Base
 
 class AWSRunner(Base):
     """Used to run commands on a Amazon Web Services system."""
-
-    def _check_for_aws_cli(self):
-        self.__logger.debug("Checking to see if aws cli is installed.")
-        response = self.execute_process(command="aws --version", executor=self._get_executor_command(), cwd=os.getcwd())
-        if response and response.get("error"):
-            self.__logger.warning(response["error"])
-        return response
 
     def _run(
         self,
@@ -55,8 +47,8 @@ class AWSRunner(Base):
             self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             self.response.command = command
-            self.response.output = outs
-            self.response.errors = errs
+            self.response.output = str(outs)
+            self.response.errors = str(errs)
             return self.print_process_output(command=command, return_code=process.returncode, output=outs, errors=errs)
         except subprocess.TimeoutExpired as e:
             if e.output:
