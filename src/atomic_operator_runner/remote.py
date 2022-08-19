@@ -14,18 +14,33 @@ from .utils.exceptions import RemoteRunnerExecutionError
 class RemoteRunner(Base):
     """Used to run command remotely."""
 
-    def _parse_data_record(self, data):
+    def _parse_data_record(self, data, type):
         """Parses the InformationRecord data out of the response stream."""
-        return {
-            "message_data": str(data.message_data),
-            "source": data.source,
-            "time_generated": data.time_generated,
-            "user": data.user,
-            "computer": data.computer,
-            "pid": data.pid,
-            "native_thread_id": data.native_thread_id,
-            "managed_thread_id": data.managed_thread_id,
+        extra_dict = {}
+        for i in dir(data):
+            if not i.startswith('_'):
+                extra_dict[i] = str(getattr(data, i))
+        if hasattr(data, "message_data"):
+            message = data.message_data
+        else:
+            message = data.message
+        data_dict = {
+            "type": type,
+            "message-data": message,
+            "source": data.source if hasattr(data, "source") else None,
+            "time_generated": data.time_generated if hasattr(data, "time_generated") else None,
+            "user": data.user if hasattr(data, "user") else None,
+            "computer": data.computer if hasattr(data, "computer") else None,
+            "pid": data.pid if hasattr(data, "pid") else None,
+            "native_thread_id": data.native_thread_id if hasattr(data, "native_thread_id") else None,
+            "managed_thread_id": data.managed_thread_id if hasattr(data, "managed_thread_id") else None,
+            "extra": extra_dict,
         }
+        if not self.response.records:
+            self.response.records = [BaseRecord(**data_dict)]
+        else:
+            self.response.records.append(BaseRecord(**data_dict))
+        return data_dict
 
     def __handle_windows_streams(self, stream):
         """Handles processing of all types of message strings from windows systems."""
