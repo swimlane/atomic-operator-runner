@@ -46,21 +46,11 @@ class RemoteRunner(Base):
     def __handle_windows_streams(self, stream):
         """Handles processing of all types of message strings from windows systems."""
         return_list = []
-        for item in stream.error:
-            if item is not None:
-                return_list.append(self._parse_data_record(item, "error"))
-        for item in stream.debug:
-            if item is not None:
-                return_list.append(self._parse_data_record(item, "debug"))
-        for item in stream.information:
-            if item is not None:
-                return_list.append(self._parse_data_record(item, "information"))
-        for item in stream.verbose:
-            if item is not None:
-                return_list.append(self._parse_data_record(item, "verbose"))
-        for item in stream.warning:
-            if item is not None:
-                return_list.append(self._parse_data_record(item, "warning"))
+        for item in ["error", "debug", "information", "verbose", "warning"]:
+            if hasattr(stream, item) and getattr(stream, item):
+                for i in getattr(stream, item):
+                    if i and i is not None:
+                        return_list.append(self._parse_data_record(i, item))
         return return_list
 
     def _create_client(self) -> None:
