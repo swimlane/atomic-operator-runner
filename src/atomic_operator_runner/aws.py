@@ -52,7 +52,7 @@ class AWSRunner(Base):
             cwd=cwd,
         )
         try:
-            self.__logger.info(f"Running command now.")
+            self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             self.response.command = command
             self.response.output = outs
@@ -94,7 +94,7 @@ class AWSRunner(Base):
         Returns:
             Dict[str]: Returns a dictionary of results from running the provided command.
         """
-        self.__logger.info(f"Checking for AWS CLI tools...")
+        self.__logger.info("Checking for AWS CLI tools...")
         response = self._run(
             executor=executor,
             command="aws --version",
@@ -106,7 +106,7 @@ class AWSRunner(Base):
         if response and response.get("error"):
             self.__logger.warning(response.get("error"))
             return response
-        self.__logger.info(f"AWS CLI tools found. Starting to run command...")
+        self.__logger.info("AWS CLI tools found. Starting to run command...")
         return self._run(
             executor=executor,
             command=command,
