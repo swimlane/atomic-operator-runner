@@ -99,3 +99,14 @@ class Base(metaclass=LoggingBase):
         else:
             self.__logger.info("(No output)")
         return return_dict
+
+    def get_local_system_platform(self) -> str:
+        """Identifies the local systems operating system platform
+
+        Returns:
+            str: The current/local systems operating system platform
+        """
+        os_name = platform.system().lower()
+        if os_name == "darwin":
+            return "macos"
+        return os_name
