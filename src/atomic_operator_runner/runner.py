@@ -1,11 +1,15 @@
 """Runs the provided command string locally or remotely."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
+import atexit
+import os
+from datetime import datetime
 from typing import Dict
 from typing import Optional
 from typing import Union
 
 from .base import Base
+from .models import RunnerResponse, TargetEnvironment
 from .utils.exceptions import IncorrectPlatformError
 
 
@@ -54,6 +58,19 @@ class Runner(Base):
         Base.private_key_string = private_key_string
         Base.ssh_port = ssh_port
         Base.ssh_timeout = ssh_timeout
+        Base.response = RunnerResponse(
+            start_timestamp=datetime.now(),
+            environment=TargetEnvironment(
+                platform=Base.platform,
+                hostname=Base.hostname if Base.hostname else platform.node(),
+                user=Base.username if Base.username else os.getlogin()
+            )
+        )
+        atexit.register(self._return_response)
+
+    def _return_response(self):
+        """Returns JSON of the RunnerResponse class object."""
+        print(self.response.json())
 
     def run(
         self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
@@ -71,14 +88,18 @@ class Runner(Base):
         """
         if elevation_required:
             command = f"{self.ELEVATION_COMMAND_MAP.get(executor)} {command}"
+        Base.response.command = command
+        Base.response.executor = executor
         if Base._run_type == "local":
             from .local import LocalRunner
 
-            return LocalRunner().run(executor=executor, command=command)
+            LocalRunner().run(executor=executor, command=command)
         else:
             from .remote import RemoteRunner
 
-            return RemoteRunner().run(executor=executor, command=command)
+            RemoteRunner().run(executor=executor, command=command)
+        atexit.unregister(self._return_response)
+        return self.response.json()
 
     def copy(self) -> None:
         """Used to copy files from one system to another."""
