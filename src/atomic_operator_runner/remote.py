@@ -7,6 +7,7 @@ import paramiko
 from pypsrp.client import Client
 
 from .base import Base
+from .models import BaseRecord
 from .utils.exceptions import IncorrectExecutorError
 from .utils.exceptions import RemoteRunnerExecutionError
 
@@ -47,34 +48,19 @@ class RemoteRunner(Base):
         return_list = []
         for item in stream.error:
             if item is not None:
-                return_list.append({
-                    'type': 'error',
-                    'value': self._parse_data_record(item)
-                })
+                return_list.append(self._parse_data_record(item, "error"))
         for item in stream.debug:
             if item is not None:
-                return_list.append({
-                    'type': 'debug',
-                    'value': self._parse_data_record(item)
-                })
+                return_list.append(self._parse_data_record(item, "debug"))
         for item in stream.information:
             if item is not None:
-                return_list.append({
-                    'type': 'information',
-                    'value': self._parse_data_record(item)
-                })
+                return_list.append(self._parse_data_record(item, "information"))
         for item in stream.verbose:
             if item is not None:
-                return_list.append({
-                    'type': 'verbose',
-                    'value': self._parse_data_record(item)
-                })
+                return_list.append(self._parse_data_record(item, "verbose"))
         for item in stream.warning:
             if item is not None:
-                return_list.append({
-                    'type': 'warning',
-                    'value': self._parse_data_record(item)
-                })
+                return_list.append(self._parse_data_record(item, "warning"))
         return return_list
 
     def _create_client(self) -> None:
@@ -130,32 +116,32 @@ class RemoteRunner(Base):
         Returns:
             Dict: Returns a dictionary of output and error keys.
         """
-        return_dict = {}
         self._create_client()
         try:
             if executor == "powershell":
                 output, streams, had_errors = self._client.execute_ps(command)
+                self.response.output = output
+                self.response.return_code = 0 if had_errors is False else had_errors 
                 return self.print_process_output(
-                    command=command, 
-                    return_code=0 if had_errors is False else had_errors,
-                    output=output, 
+                    command=command,
+                    return_code=self.response.return_code,
+                    output=output,
                     errors=self.__handle_windows_streams(stream=streams)
                 )
             elif executor == "cmd":
                 stdout, stderr, rc = self._client.execute_cmd(command)
+                self.response.output = stdout
+                self.response.return_code = rc
+                self.response.errors = stderr
                 return self.print_process_output(command=command, return_code=rc, output=stdout, errors=stderr)
             elif executor == "ssh":
                 stdin, stdout, stderr = self._client.exec_command(command=command)
-                return_dict.update(
-                    {
-                        "output": stdout,
-                        "error": stderr,
-                    }
-                )
+                self.response.output = stdout
+                self.response.errors = stderr
+                return self.print_process_output(command=command, return_code=stderr, output=stdout, errors=stderr)
             else:
                 raise IncorrectExecutorError(
                     f"The provided executor of '{executor}' is not one of sh, bash, powershell or cmd"
                 )
         except Exception as e:
             raise RemoteRunnerExecutionError(exception=e) from e
-        return return_dict
