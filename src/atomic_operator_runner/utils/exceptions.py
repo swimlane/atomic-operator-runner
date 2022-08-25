@@ -3,6 +3,7 @@
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 
 from typing import Any
+
 from paramiko.ssh_exception import AuthenticationException
 from paramiko.ssh_exception import BadAuthenticationType
 from paramiko.ssh_exception import NoValidConnectionsError
@@ -39,7 +40,9 @@ class RemoteRunnerExecutionError(Exception):
         from ..base import Base
 
         if exception is NoValidConnectionsError:
-            error_string = f"SSH Error - Unable to connect to {Base.config.hostname} - Received {type(exception).__name__}"
+            error_string = (
+                f"SSH Error - Unable to connect to {Base.config.hostname} - Received {type(exception).__name__}"
+            )
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is AuthenticationException:

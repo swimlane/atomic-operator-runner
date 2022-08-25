@@ -2,9 +2,9 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import platform
-from typing import Optional
 
-from .models import Host, RunnerResponse
+from .models import Host
+from .models import RunnerResponse
 from .utils.logger import LoggingBase
 
 

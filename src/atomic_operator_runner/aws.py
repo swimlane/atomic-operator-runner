@@ -48,11 +48,7 @@ class AWSRunner(Base):
             self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             Processor(
-                command=command, 
-                executor=executor,
-                return_code=process.returncode,
-                output=str(outs),
-                errors=str(errs)
+                command=command, executor=executor, return_code=process.returncode, output=str(outs), errors=str(errs)
             )
         except subprocess.TimeoutExpired as e:
             if e.output:

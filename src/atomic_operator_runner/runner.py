@@ -64,7 +64,7 @@ class Runner(Base):
             port=ssh_port,
             timeout=ssh_timeout,
             platform=platform.lower(),
-            run_type="remote" if hostname else "local"
+            run_type="remote" if hostname else "local",
         )
         atexit.register(self._return_response)
 

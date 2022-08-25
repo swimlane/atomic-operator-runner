@@ -51,11 +51,7 @@ class LocalRunner(Base):
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             # Adding details to our object response object
             Processor(
-                command=command, 
-                executor=executor, 
-                return_code=process.returncode, 
-                output=str(outs), 
-                errors=str(errs)
+                command=command, executor=executor, return_code=process.returncode, output=str(outs), errors=str(errs)
             )
         except subprocess.TimeoutExpired as e:
             if e.output:
