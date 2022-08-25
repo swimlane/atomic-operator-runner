@@ -4,7 +4,7 @@
 import platform
 from typing import Optional
 
-from .models import RunnerResponse
+from .models import Host, RunnerResponse
 from .utils.logger import LoggingBase
 
 
@@ -31,17 +31,7 @@ class Base(metaclass=LoggingBase):
         "ssh": "sudo",
     }
 
-    # properties used throughout the project
-    hostname: Optional[str] = None
-    username: Optional[str] = None
-    password: Optional[str] = None
-    verify_ssl: Optional[bool] = False
-    ssh_key_path: Optional[str] = None
-    private_key_string: Optional[str] = None
-    ssh_port: Optional[int] = 22
-    ssh_timeout: Optional[int] = 5
-    platform: Optional[str] = None
-    _run_type: Optional[str] = None
+    config: Host
     response = RunnerResponse()
 
     def get_local_system_platform(self) -> str:

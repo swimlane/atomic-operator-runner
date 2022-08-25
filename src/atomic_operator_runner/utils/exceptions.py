@@ -2,6 +2,7 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 
+from typing import Any
 from paramiko.ssh_exception import AuthenticationException
 from paramiko.ssh_exception import BadAuthenticationType
 from paramiko.ssh_exception import NoValidConnectionsError
@@ -33,51 +34,51 @@ class IncorrectPlatformError(Exception):
 class RemoteRunnerExecutionError(Exception):
     """Raised when an error occurs executing a command remotely."""
 
-    def __init__(self, exception: Exception) -> None:
+    def __init__(self, exception: Any) -> None:
         """Raises when an error occurs running a command remotely."""
         from ..base import Base
 
         if exception is NoValidConnectionsError:
-            error_string = f"SSH Error - Unable to connect to {Base.hostname} - Received {type(exception).__name__}"
+            error_string = f"SSH Error - Unable to connect to {Base.config.hostname} - Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is AuthenticationException:
-            error_string = f"SSH Error - Unable to authenticate to host - {Base.hostname} "
+            error_string = f"SSH Error - Unable to authenticate to host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is BadAuthenticationType:
-            error_string = f"SSH Error - Unable to use provided authentication type to host - {Base.hostname} "
+            error_string = f"SSH Error - Unable to use provided authentication type to host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is PasswordRequiredException:
-            error_string = f"SSH Error - Must provide a password to authenticate to host - {Base.hostname} "
+            error_string = f"SSH Error - Must provide a password to authenticate to host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is AuthenticationError:
-            error_string = f"Windows Error - Unable to authenticate to host - {Base.hostname} "
+            error_string = f"Windows Error - Unable to authenticate to host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is WinRMTransportError:
-            error_string = f"Windows Error - Error occurred during transport on host - {Base.hostname} "
+            error_string = f"Windows Error - Error occurred during transport on host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is WSManFaultError:
-            error_string = f"Windows Error - Received WSManFault information from host - {Base.hostname} "
+            error_string = f"Windows Error - Received WSManFault information from host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         elif exception is RequestException:
-            error_string = f"Request Exception - Connection Error to the configured host - {Base.hostname} "
+            error_string = f"Request Exception - Connection Error to the configured host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)
         else:
-            error_string = f"Unknown Error - Received an unknown error from host - {Base.hostname} "
+            error_string = f"Unknown Error - Received an unknown error from host - {Base.config.hostname} "
             error_string += f"- Received {type(exception).__name__}"
             Base.__logger.debug(f"Full stack trace: {exception}")
             Base.__logger.warning(error_string)

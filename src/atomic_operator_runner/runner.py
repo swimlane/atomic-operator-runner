@@ -11,6 +11,7 @@ from typing import Optional
 from typing import Union
 
 from .base import Base
+from .models import Host
 from .models import RunnerResponse
 from .models import TargetEnvironment
 from .utils.exceptions import IncorrectPlatformError
@@ -53,16 +54,18 @@ class Runner(Base):
         """
         if platform.lower() not in ["macos", "linux", "windows", "aws"]:
             raise IncorrectPlatformError(provided_platform=platform)
-        Base.platform = platform.lower()
-        Base._run_type = "remote" if hostname else "local"
-        Base.hostname = hostname
-        Base.username = username
-        Base.password = password
-        Base.verify_ssl = verify_ssl
-        Base.ssh_key_path = ssh_key_path
-        Base.private_key_string = private_key_string
-        Base.ssh_port = ssh_port
-        Base.ssh_timeout = ssh_timeout
+        Base.config = Host(
+            hostname=hostname,
+            username=username,
+            password=password,
+            verify_ssl=verify_ssl,
+            ssh_key_path=ssh_key_path,
+            private_key_string=private_key_string,
+            port=ssh_port,
+            timeout=ssh_timeout,
+            platform=platform.lower(),
+            run_type="remote" if hostname else "local"
+        )
         atexit.register(self._return_response)
 
     def _return_response(self):
@@ -86,15 +89,15 @@ class Runner(Base):
         Base.response = RunnerResponse(
             start_timestamp=datetime.now(),
             environment=TargetEnvironment(
-                platform=Base.platform,
-                hostname=Base.hostname if Base.hostname else platform.node(),
-                user=Base.username if Base.username else os.getlogin(),
+                platform=Base.config.platform,
+                hostname=Base.config.hostname if Base.config.hostname else platform.node(),
+                user=Base.config.username if Base.config.username else os.getlogin(),
             ),
         )
         if elevation_required:
             command = f"{self.ELEVATION_COMMAND_MAP.get(executor)} {command}"
         Base.response.elevation_required = elevation_required
-        if Base._run_type == "local":
+        if Base.config.run_type == "local":
             from .local import LocalRunner
 
             LocalRunner().run(executor=executor, command=command)
@@ -104,7 +107,7 @@ class Runner(Base):
             RemoteRunner().run(executor=executor, command=command)
         atexit.unregister(self._return_response)
         self.responses.append(self.response)
-        return self.response.json()
+        return [x.json() for x in self.responses]
 
     def copy(self) -> None:
         """Used to copy files from one system to another."""

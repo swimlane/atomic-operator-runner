@@ -20,39 +20,39 @@ class RemoteRunner(Base):
         """Creates a paramiko client object."""
         _client = SSHClient()
         _client.set_missing_host_key_policy(AutoAddPolicy())
-        if Base.ssh_key_path:
+        if Base.config.ssh_key_path:
             _client.connect(
-                Base.hostname,
-                port=Base.ssh_port,
-                username=Base.username,
-                key_filename=Base.ssh_key_path,
-                timeout=Base.ssh_timeout,
+                Base.config.hostname,
+                port=Base.config.port,
+                username=Base.config.username,
+                key_filename=Base.config.ssh_key_path,
+                timeout=Base.config.timeout,
             )
-        elif Base.private_key_string:
+        elif Base.config.private_key_string:
             _client.connect(
-                Base.hostname,
-                port=Base.ssh_port,
-                username=Base.username,
-                pkey=Base.private_key_string,
-                timeout=Base.ssh_timeout,
+                Base.config.hostname,
+                port=Base.config.port,
+                username=Base.config.username,
+                pkey=Base.config.private_key_string,
+                timeout=Base.config.timeout,
             )
-        elif Base.password:
+        elif Base.config.password:
             _client.connect(
-                Base.hostname,
-                port=Base.ssh_port,
-                username=Base.username,
-                password=Base.password,
-                timeout=Base.ssh_timeout,
+                Base.config.hostname,
+                port=Base.config.port,
+                username=Base.config.username,
+                password=Base.config.password,
+                timeout=Base.config.timeout,
             )
         return _client
 
     def _get_pypsrp_client(self) -> Client:
         """Creates a client for the defined platform operating system."""
         return Client(
-            Base.hostname,
-            username=Base.username,
-            password=Base.password,
-            ssl=Base.verify_ssl,
+            Base.config.hostname,
+            username=Base.config.username,
+            password=Base.config.password,
+            ssl=Base.config.verify_ssl,
         )
 
     def run(self, executor: str, command: str) -> None:

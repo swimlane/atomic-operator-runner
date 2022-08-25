@@ -8,6 +8,21 @@ from pydantic import BaseModel
 from pydantic import Field
 
 
+class Host(BaseModel):
+    """Base configuration for host information."""
+
+    hostname: str
+    username: Optional[str]
+    password: Optional[str]
+    verify_ssl: bool = False
+    ssh_key_path: Optional[str]
+    private_key_string: Optional[str]
+    port: int = 22
+    timeout: int = 5
+    platform: Optional[str]
+    run_type: Optional[str]
+
+
 class BaseRecord(BaseModel):
     """Base record model used by Remote communications."""
 
