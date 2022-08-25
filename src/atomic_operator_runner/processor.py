@@ -117,7 +117,7 @@ class Processor(Base):
         return_data = re.sub(r"(\r?\n)*[A-Z]\:.+?\>", "", str(return_data))
         return str(return_data)
 
-    def _print(self):
+    def _print(self) -> None:
         """Displays and logs data regarding the results of the execution."""
         self.__logger.debug("Processing command output.")
         if self.response.output:
