@@ -6,6 +6,7 @@ from typing import Dict
 from typing import Optional
 
 from .base import Base
+from .processor import Processor
 
 
 class AWSRunner(Base):
@@ -46,10 +47,13 @@ class AWSRunner(Base):
         try:
             self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
-            self.response.command = command
-            self.response.output = str(outs)
-            self.response.errors = str(errs)
-            return self.print_process_output(command=command, return_code=process.returncode, output=outs, errors=errs)
+            Processor(
+                command=command, 
+                executor=executor,
+                return_code=process.returncode,
+                output=str(outs),
+                errors=str(errs)
+            )
         except subprocess.TimeoutExpired as e:
             if e.output:
                 self.__logger.warning(e.output)
