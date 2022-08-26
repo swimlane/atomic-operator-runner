@@ -2,8 +2,8 @@
 import re
 from datetime import datetime
 from typing import Any
-from typing import Dict
 from typing import List
+from typing import Union
 
 from pypsrp.powershell import PSDataStreams
 
@@ -42,7 +42,7 @@ class Processor(Base):
         Args:
             data (Any): Data to build a BaseRecord from.
         """
-        record = None
+        record: Union[BaseRecord, List[BaseRecord]]
         if isinstance(data, dict):
             try:
                 record = BaseRecord(**data)
@@ -65,7 +65,7 @@ class Processor(Base):
         else:
             self.response.records.extend(record)
 
-    def _parse_data_record(self, data: Any, type: str) -> Dict[str, str]:
+    def _parse_data_record(self, data: Any, type: str) -> BaseRecord:
         """Parses the InformationRecord data out of the response stream."""
         extra_dict = {}
         for i in dir(data):
@@ -89,7 +89,7 @@ class Processor(Base):
         }
         return BaseRecord(**data_dict)
 
-    def _handle_windows_streams(self, stream: PSDataStreams) -> List[Dict[str, str]]:
+    def _handle_windows_streams(self, stream: PSDataStreams) -> List[BaseRecord]:
         """Handles processing of all types of message strings from windows systems."""
         return_list = []
         for item in ["error", "debug", "information", "verbose", "warning"]:
@@ -99,7 +99,7 @@ class Processor(Base):
                         return_list.append(self._parse_data_record(i, item))
         return return_list
 
-    def _clean_output(self, data: bytes) -> str:
+    def _clean_output(self, data: Union[str, bytes]) -> str:
         """Decodes data and strips CLI garbage from returned outputs and errors.
 
         Args:

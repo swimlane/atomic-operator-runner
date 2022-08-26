@@ -5,10 +5,8 @@ import atexit
 import os
 import platform
 from datetime import datetime
-from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Union
 
 from .base import Base
 from .models import Host
@@ -25,12 +23,12 @@ class Runner(Base):
     def __init__(
         self,
         platform: str,
-        hostname: None = None,
-        username: None = None,
-        password: None = None,
+        hostname: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        ssh_key_path: Optional[str] = None,
+        private_key_string: Optional[str] = None,
         verify_ssl: bool = False,
-        ssh_key_path: None = None,
-        private_key_string: None = None,
         ssh_port: int = 22,
         ssh_timeout: int = 5,
     ) -> None:
@@ -68,13 +66,13 @@ class Runner(Base):
         )
         atexit.register(self._return_response)
 
-    def _return_response(self):
+    def _return_response(self) -> None:
         """Returns JSON of the RunnerResponse class object."""
         print(self.response.json())
 
     def run(
         self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
-    ) -> Union[Dict[str, object], Dict[str, str]]:
+    ) -> List[str]:
         """Runs the provided command either locally or remotely based on the provided configuration information.
 
         Args:
@@ -84,7 +82,7 @@ class Runner(Base):
             elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
 
         Returns:
-            Dict[str]: Returns a dictionary of the command results, including any errors.
+            List[str]: Returns a list of dictionaries of the command results, including any errors.
         """
         Base.response = RunnerResponse(
             start_timestamp=datetime.now(),
@@ -100,7 +98,7 @@ class Runner(Base):
         if Base.config.run_type == "local":
             from .local import LocalRunner
 
-            LocalRunner().run(executor=executor, command=command)
+            LocalRunner().run(executor=executor, command=command, cwd=cwd)
         else:
             from .remote import RemoteRunner
 

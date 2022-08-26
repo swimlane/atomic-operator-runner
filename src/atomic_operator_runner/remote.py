@@ -5,6 +5,7 @@ import atexit
 
 from paramiko.client import AutoAddPolicy
 from paramiko.client import SSHClient
+from paramiko.pkey import PKey
 from pypsrp.client import Client
 
 from .base import Base
@@ -33,7 +34,7 @@ class RemoteRunner(Base):
                 Base.config.hostname,
                 port=Base.config.port,
                 username=Base.config.username,
-                pkey=Base.config.private_key_string,
+                pkey=PKey(data=Base.config.private_key_string),
                 timeout=Base.config.timeout,
             )
         elif Base.config.password:

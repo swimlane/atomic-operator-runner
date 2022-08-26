@@ -2,6 +2,7 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import platform
+from typing import Dict
 
 from .models import Host
 from .models import RunnerResponse
@@ -11,7 +12,7 @@ from .utils.logger import LoggingBase
 class Base(metaclass=LoggingBase):
     """Base class to all other classes within this project."""
 
-    COMMAND_MAP = {
+    COMMAND_MAP: Dict[str, Dict[str, str]] = {
         "command_prompt": {
             "windows": "C:\\Windows\\System32\\cmd.exe",
             "linux": "/bin/sh",
@@ -22,7 +23,7 @@ class Base(metaclass=LoggingBase):
         "sh": {"linux": "/bin/sh", "macos": "/bin/sh"},
         "bash": {"linux": "/bin/bash", "macos": "/bin/bash"},
     }
-    ELEVATION_COMMAND_MAP = {
+    ELEVATION_COMMAND_MAP: Dict[str, str] = {
         "powershell": "Start-Process PowerShell -Verb RunAs;",
         "cmd": "cmd.exe /c",
         "command_prompt": "cmd.exe /c",
@@ -32,7 +33,7 @@ class Base(metaclass=LoggingBase):
     }
 
     config: Host
-    response = RunnerResponse()
+    response: RunnerResponse = RunnerResponse()
 
     def get_local_system_platform(self) -> str:
         """Identifies the local systems operating system platform.

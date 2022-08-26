@@ -1,6 +1,7 @@
 """Main command line entry point."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
+from typing import Optional
 import click
 
 from atomic_operator_runner import Runner
@@ -26,21 +27,21 @@ from atomic_operator_runner import Runner
 @click.argument("executor")
 @click.option("--elevated", default=False, help="Whether or not to run the command elevated.")
 def main(
-    platform,
-    hostname,
-    username,
-    password,
-    ssh_key_path,
-    private_key_string,
-    verify_ssl,
-    ssh_port,
-    ssh_timeout,
-    command,
-    executor,
-    elevated,
+    platform: str,
+    command: str,
+    executor: str,
+    hostname: Optional[str] = None,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+    ssh_key_path: Optional[str] = None,
+    private_key_string: Optional[str] = None,
+    verify_ssl: bool = False,
+    ssh_port: int = 22,
+    ssh_timeout: int = 5,
+    elevated: bool = False,
 ) -> None:
     """atomic-operator-runner executes powershell, cmd or bash/sh commands both locally or remotely using SSH or WinRM."""
-    return Runner(
+    Runner(
         platform=platform,
         hostname=hostname,
         username=username,

@@ -20,7 +20,7 @@ class LocalRunner(Base):
         shell: bool = False,
         env: Optional[Dict[str, str]] = None,
         cwd: Optional[str] = None,
-    ) -> Dict[str, str]:
+    ) -> None:
         """Runs the provided command string using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd
@@ -32,9 +32,6 @@ class LocalRunner(Base):
             shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
             env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
             cwd (str, optional): The current working directory. Defaults to None.
-
-        Returns:
-            Dict[str]: Returns a dictionary of results from running the provided command.
         """
         self.__logger.debug("Starting a subprocess on the local system.")
         process = subprocess.Popen(
@@ -63,4 +60,3 @@ class LocalRunner(Base):
             self.__logger.warning("Command timed out!")
 
             process.kill()
-            return {}

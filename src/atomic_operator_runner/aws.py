@@ -20,7 +20,7 @@ class AWSRunner(Base):
         shell: bool = False,
         env: Optional[Dict[str, str]] = None,
         cwd: Optional[str] = None,
-    ) -> Dict[str, str]:
+    ) -> None:
         """Runs the provided command string using the provided executor.
 
         Args:
@@ -30,9 +30,6 @@ class AWSRunner(Base):
             shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
             env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
             cwd (str, optional): The current working directory. Defaults to None.
-
-        Returns:
-            Dict[str]: Returns a dictionary of results from running the provided command.
         """
         self.__logger.debug("Starting a subprocess on the local system.")
         process = subprocess.Popen(
@@ -58,9 +55,7 @@ class AWSRunner(Base):
             if e.stderr:
                 self.__logger.warning(e.stderr)
             self.__logger.warning("Command timed out!")
-
             process.kill()
-            return {}
 
     def run(
         self,
@@ -70,7 +65,7 @@ class AWSRunner(Base):
         shell: bool = False,
         env: Optional[Dict[str, str]] = None,
         cwd: Optional[str] = None,
-    ) -> Dict[str, str]:
+    ) -> None:
         """Runs the provided command string using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd
@@ -82,14 +77,11 @@ class AWSRunner(Base):
             shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
             env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
             cwd (str, optional): The current working directory. Defaults to None.
-
-        Returns:
-            Dict[str]: Returns a dictionary of results from running the provided command.
         """
         self.__logger.info("Checking for AWS CLI tools...")
         response = self._run(executor=executor, command="aws --version", timeout=timeout, shell=shell, env=env, cwd=cwd)
         if response and response.get("error"):
             self.__logger.warning(response.get("error"))
-            return response
-        self.__logger.info("AWS CLI tools found. Starting to run command...")
-        return self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)
+        else:
+            self.__logger.info("AWS CLI tools found. Starting to run command...")
+            self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)
