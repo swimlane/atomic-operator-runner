@@ -79,9 +79,6 @@ class AWSRunner(Base):
             cwd (str, optional): The current working directory. Defaults to None.
         """
         self.__logger.info("Checking for AWS CLI tools...")
-        response = self._run(executor=executor, command="aws --version", timeout=timeout, shell=shell, env=env, cwd=cwd)
-        if response and response.get("error"):
-            self.__logger.warning(response.get("error"))
-        else:
-            self.__logger.info("AWS CLI tools found. Starting to run command...")
-            self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)
+        self._run(executor=executor, command="aws --version", timeout=timeout, shell=shell, env=env, cwd=cwd)
+        self.__logger.info("AWS CLI tools found. Starting to run command...")
+        self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)
