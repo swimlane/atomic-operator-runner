@@ -65,7 +65,7 @@ class Processor(Base):
         else:
             self.response.records.extend(record)
 
-    def _parse_data_record(self, data: Any, type: str) -> BaseRecord:
+    def _parse_data_record(self, data: Any, record_type: str) -> BaseRecord:
         """Parses the InformationRecord data out of the response stream."""
         extra_dict = {}
         for i in dir(data):
@@ -76,7 +76,7 @@ class Processor(Base):
         else:
             message = data.message
         data_dict = {
-            "type": type,
+            "type": record_type,
             "message-data": message,
             "source": data.source if hasattr(data, "source") else None,
             "time_generated": data.time_generated if hasattr(data, "time_generated") else None,
