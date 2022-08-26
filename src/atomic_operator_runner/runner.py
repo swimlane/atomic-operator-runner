@@ -59,8 +59,8 @@ class Runner(Base):
             verify_ssl=verify_ssl,
             ssh_key_path=ssh_key_path,
             private_key_string=private_key_string,
-            port=ssh_port,
-            timeout=ssh_timeout,
+            ssh_port=ssh_port,
+            ssh_timeout=ssh_timeout,
             platform=platform.lower(),
             run_type="remote" if hostname else "local",
         )

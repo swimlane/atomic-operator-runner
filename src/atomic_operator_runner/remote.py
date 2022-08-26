@@ -24,26 +24,26 @@ class RemoteRunner(Base):
         if Base.config.ssh_key_path:
             _client.connect(
                 Base.config.hostname,
-                port=Base.config.port,
+                port=Base.config.ssh_port,
                 username=Base.config.username,
                 key_filename=Base.config.ssh_key_path,
-                timeout=Base.config.timeout,
+                timeout=Base.config.ssh_timeout,
             )
         elif Base.config.private_key_string:
             _client.connect(
                 Base.config.hostname,
-                port=Base.config.port,
+                port=Base.config.ssh_port,
                 username=Base.config.username,
                 pkey=PKey(data=Base.config.private_key_string),
-                timeout=Base.config.timeout,
+                timeout=Base.config.ssh_timeout,
             )
         elif Base.config.password:
             _client.connect(
                 Base.config.hostname,
-                port=Base.config.port,
+                port=Base.config.ssh_port,
                 username=Base.config.username,
                 password=Base.config.password,
-                timeout=Base.config.timeout,
+                timeout=Base.config.ssh_timeout,
             )
         return _client
 
