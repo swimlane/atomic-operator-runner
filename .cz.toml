@@ -1,0 +1,8 @@
+[tool.commitizen]
+version = "0.1.1"
+version_files = [
+    "pyproject.toml:version"
+]
+name = "cz_conventional_commits"
+tag_format = "$major.$minor.$patch"
+update_changelog_on_bump = true
