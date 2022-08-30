@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    permissions: 
+    permissions:
       contents: write
       pull-requests: write
     strategy:
@@ -46,7 +46,7 @@ jobs:
           changelog_increment_filename: CURRENT.CHANGELOG.md
           branch: main
       - name: Publish
-        run: | 
+        run: |
           poetry config http-basic.pypi ${{ secrets.PYPI_USERNAME }} ${{ secrets.PYPI_PASSWORD }}
           poetry publish --build
       - name: Publish the release notes
