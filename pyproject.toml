@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "atomic-operator-runner"
-version = "0.1.1"
+version = "0.1.2"
 description = "atomic-operator-runner"
 authors = ["Josh Rickard <rickardja@live.com>"]
 license = "MIT"
