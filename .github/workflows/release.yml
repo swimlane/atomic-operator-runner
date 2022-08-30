@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - main
-      - master
 
 jobs:
-  publish:
+  release:
     permissions: 
       contents: write
       pull-requests: write
@@ -27,8 +26,20 @@ jobs:
         uses: abatilo/actions-poetry@v2.1.4
         with:
           poetry-version: ${{ matrix.poetry-version }}
+      - name: Check if there is a parent commit
+        id: check-parent-commit
+        run: |
+          echo "::set-output name=sha::$(git rev-parse --verify --quiet HEAD^)"
+      - name: Detect and tag new version
+        id: check-version
+        if: steps.check-parent-commit.outputs.sha
+        uses: salsify/action-detect-and-tag-new-version@v2.0.1
+        with:
+          version-command: |
+            bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
       - name: Create bump and changelog
         id: cz
+        # if: "!startsWith(github.event.head_commit.message, 'bump:')"
         uses: commitizen-tools/commitizen-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
