@@ -151,3 +151,5 @@ Security concerns are a top priority for us, please review our [Security Policy]
 
 [license]: https://github.com/swimlane/atomic-operator-runner/blob/main/LICENSE
 [contributor guide]: https://github.com/swimlane/atomic-operator-runner/blob/main/CONTRIBUTING.md
+
+TEST
