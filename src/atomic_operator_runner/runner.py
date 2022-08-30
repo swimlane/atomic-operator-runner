@@ -1,26 +1,34 @@
 """Runs the provided command string locally or remotely."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-from typing import Dict
+import atexit
+import os
+import platform
+from datetime import datetime
+from typing import List
 from typing import Optional
-from typing import Union
 
 from .base import Base
+from .models import Host
+from .models import RunnerResponse
+from .models import TargetEnvironment
 from .utils.exceptions import IncorrectPlatformError
 
 
 class Runner(Base):
     """Runs the provided command string locally or remotely."""
 
+    responses: List[RunnerResponse] = []
+
     def __init__(
         self,
         platform: str,
-        hostname: None = None,
-        username: None = None,
-        password: None = None,
+        hostname: Optional[str] = None,
+        username: Optional[str] = None,
+        password: Optional[str] = None,
+        ssh_key_path: Optional[str] = None,
+        private_key_string: Optional[str] = None,
         verify_ssl: bool = False,
-        ssh_key_path: None = None,
-        private_key_string: None = None,
         ssh_port: int = 22,
         ssh_timeout: int = 5,
     ) -> None:
@@ -44,20 +52,27 @@ class Runner(Base):
         """
         if platform.lower() not in ["macos", "linux", "windows", "aws"]:
             raise IncorrectPlatformError(provided_platform=platform)
-        Base.platform = platform.lower()
-        Base._run_type = "remote" if hostname else "local"
-        Base.hostname = hostname
-        Base.username = username
-        Base.password = password
-        Base.verify_ssl = verify_ssl
-        Base.ssh_key_path = ssh_key_path
-        Base.private_key_string = private_key_string
-        Base.ssh_port = ssh_port
-        Base.ssh_timeout = ssh_timeout
+        Base.config = Host(
+            hostname=hostname,
+            username=username,
+            password=password,
+            verify_ssl=verify_ssl,
+            ssh_key_path=ssh_key_path,
+            private_key_string=private_key_string,
+            ssh_port=ssh_port,
+            ssh_timeout=ssh_timeout,
+            platform=platform.lower(),
+            run_type="remote" if hostname else "local",
+        )
+        atexit.register(self._return_response)
+
+    def _return_response(self) -> None:
+        """Returns JSON of the RunnerResponse class object."""
+        print(self.response.json())
 
     def run(
         self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
-    ) -> Union[Dict[str, object], Dict[str, str]]:
+    ) -> List[str]:
         """Runs the provided command either locally or remotely based on the provided configuration information.
 
         Args:
@@ -67,18 +82,30 @@ class Runner(Base):
             elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
 
         Returns:
-            Dict[str]: Returns a dictionary of the command results, including any errors.
+            List[str]: Returns a list of dictionaries of the command results, including any errors.
         """
+        Base.response = RunnerResponse(
+            start_timestamp=datetime.now(),
+            environment=TargetEnvironment(
+                platform=Base.config.platform,
+                hostname=Base.config.hostname if Base.config.hostname else platform.node(),
+                user=Base.config.username if Base.config.username else os.getlogin(),
+            ),
+        )
         if elevation_required:
             command = f"{self.ELEVATION_COMMAND_MAP.get(executor)} {command}"
-        if Base._run_type == "local":
+        Base.response.elevation_required = elevation_required
+        if Base.config.run_type == "local":
             from .local import LocalRunner
 
-            return LocalRunner().run(executor=executor, command=command)
+            LocalRunner().run(executor=executor, command=command, cwd=cwd)
         else:
             from .remote import RemoteRunner
 
-            return RemoteRunner().run(executor=executor, command=command)
+            RemoteRunner().run(executor=executor, command=command)
+        atexit.unregister(self._return_response)
+        self.responses.append(self.response)
+        return [x.json() for x in self.responses]
 
     def copy(self) -> None:
         """Used to copy files from one system to another."""

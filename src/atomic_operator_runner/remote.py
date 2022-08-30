@@ -1,12 +1,15 @@
 """Used to run commands remotely."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
-from typing import Dict
+import atexit
 
-import paramiko
+from paramiko.client import AutoAddPolicy
+from paramiko.client import SSHClient
+from paramiko.pkey import PKey
 from pypsrp.client import Client
 
 from .base import Base
+from .processor import Processor
 from .utils.exceptions import IncorrectExecutorError
 from .utils.exceptions import RemoteRunnerExecutionError
 
@@ -14,44 +17,46 @@ from .utils.exceptions import RemoteRunnerExecutionError
 class RemoteRunner(Base):
     """Used to run command remotely."""
 
-    def _create_client(self) -> None:
-        """Creates a client for the defined platform operating system."""
-        if Base.platform == "windows":
-            self._client = Client(
-                Base.hostname,
-                username=Base.username,
-                password=Base.password,
-                ssl=Base.verify_ssl,
+    def _get_paramiko_client(self) -> SSHClient:
+        """Creates a paramiko client object."""
+        _client = SSHClient()
+        _client.set_missing_host_key_policy(AutoAddPolicy())
+        if Base.config.ssh_key_path:
+            _client.connect(
+                Base.config.hostname,
+                port=Base.config.ssh_port,
+                username=Base.config.username,
+                key_filename=Base.config.ssh_key_path,
+                timeout=Base.config.ssh_timeout,
             )
-        else:
-            self._client = paramiko.SSHClient()
-            self._client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            if Base.ssh_key_path:
-                self._client.connect(
-                    Base.hostname,
-                    port=Base.ssh_port,
-                    username=Base.username,
-                    key_filename=Base.ssh_key_path,
-                    timeout=Base.ssh_timeout,
-                )
-            elif Base.private_key_string:
-                self._client.connect(
-                    Base.hostname,
-                    port=Base.ssh_port,
-                    username=Base.username,
-                    pkey=Base.private_key_string,
-                    timeout=Base.ssh_timeout,
-                )
-            elif Base.password:
-                self._client.connect(
-                    Base.hostname,
-                    port=Base.ssh_port,
-                    username=Base.username,
-                    password=Base.password,
-                    timeout=Base.ssh_timeout,
-                )
+        elif Base.config.private_key_string:
+            _client.connect(
+                Base.config.hostname,
+                port=Base.config.ssh_port,
+                username=Base.config.username,
+                pkey=PKey(data=Base.config.private_key_string),
+                timeout=Base.config.ssh_timeout,
+            )
+        elif Base.config.password:
+            _client.connect(
+                Base.config.hostname,
+                port=Base.config.ssh_port,
+                username=Base.config.username,
+                password=Base.config.password,
+                timeout=Base.config.ssh_timeout,
+            )
+        return _client
 
-    def run(self, executor: str, command: str) -> Dict[str, object]:
+    def _get_pypsrp_client(self) -> Client:
+        """Creates a client for the defined platform operating system."""
+        return Client(
+            Base.config.hostname,
+            username=Base.config.username,
+            password=Base.config.password,
+            ssl=Base.config.verify_ssl,
+        )
+
+    def run(self, executor: str, command: str) -> None:
         """Runs the provided command remotely using the provided executor.
 
         There are several executors that can be used: sh, bash, powershell and cmd
@@ -63,41 +68,39 @@ class RemoteRunner(Base):
         Raises:
             IncorrectExecutorError: Raised when the provided executor is unknown.
             RemoteRunnerExecutionError: Raised when an error occurs running command remotely.
-
-        Returns:
-            Dict: Returns a dictionary of output and error keys.
         """
-        return_dict = {}
-        self._create_client()
         try:
             if executor == "powershell":
-                output, streams, had_errors = self._client.execute_ps(command)
-                return_dict.update(
-                    {
-                        "output": output,
-                        "error": streams,
-                    }
-                )
+                # Creating a pypsrp client and executing powershell command remotely.
+                output, streams, had_errors = self._get_pypsrp_client().execute_ps(command)
+                # saving the output from the execution to our RunnerResponse object
+                if isinstance(had_errors, bool):
+                    had_errors = 0 if had_errors is False else 1
+                Processor(command=command, executor=executor, return_code=had_errors, output=output, errors=streams)
             elif executor == "cmd":
-                stdout, stderr, rc = self._client.execute_cmd(command)
-                return_dict.update(
-                    {
-                        "output": stdout,
-                        "error": stderr,
-                    }
+                stdout, stderr, rc = self._get_pypsrp_client().execute_cmd(command)
+                Processor(command=command, executor=executor, return_code=rc, output=stdout, errors=stderr)
+            elif executor == "sh" or executor == "bash":
+                atexit.register(self._close_paramiko_client)
+                client = self._get_paramiko_client()
+                stdin, stdout, stderr = client.exec_command(command=command)
+                Processor(
+                    command=command,
+                    executor=executor,
+                    return_code=stdout.channel.recv_exit_status(),
+                    output=stdout.read(),
+                    errors=stderr.read(),
                 )
-            elif executor == "ssh":
-                stdin, stdout, stderr = self._client.exec_command(command=command)
-                return_dict.update(
-                    {
-                        "output": stdout,
-                        "error": stderr,
-                    }
-                )
+                stdin.flush()
+                self._close_paramiko_client(client=client)
             else:
                 raise IncorrectExecutorError(
                     f"The provided executor of '{executor}' is not one of sh, bash, powershell or cmd"
                 )
         except Exception as e:
             raise RemoteRunnerExecutionError(exception=e) from e
-        return return_dict
+
+    def _close_paramiko_client(self, client: SSHClient) -> None:
+        """Closes the paramiko client."""
+        client.close()
+        atexit.unregister(self._close_paramiko_client)

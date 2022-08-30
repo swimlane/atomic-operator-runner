@@ -80,7 +80,7 @@ class LoggingBase(type):
 
     def setup_logging(
         cls,
-        default_path: str = "./aqueduct/data/logging.yml",
+        default_path: str = "./src/atomic_operator_runner/data/logging.yml",
         default_level: int = logging.INFO,
         env_key: str = "LOG_CFG",
     ) -> None:

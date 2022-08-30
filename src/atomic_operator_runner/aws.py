@@ -9,10 +9,10 @@ from .base import Base
 from .processor import Processor
 
 
-class LocalRunner(Base):
-    """Used to run commands on a local system."""
+class AWSRunner(Base):
+    """Used to run commands on a Amazon Web Services system."""
 
-    def run(
+    def _run(
         self,
         executor: str,
         command: str,
@@ -22,8 +22,6 @@ class LocalRunner(Base):
         cwd: Optional[str] = None,
     ) -> None:
         """Runs the provided command string using the provided executor.
-
-        There are several executors that can be used: sh, bash, powershell and cmd
 
         Args:
             executor (str): The executor to use when executing the provided command string.
@@ -46,7 +44,6 @@ class LocalRunner(Base):
         try:
             self.__logger.info("Running command now.")
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
-            # Adding details to our object response object
             Processor(
                 command=command, executor=executor, return_code=process.returncode, output=str(outs), errors=str(errs)
             )
@@ -58,5 +55,30 @@ class LocalRunner(Base):
             if e.stderr:
                 self.__logger.warning(e.stderr)
             self.__logger.warning("Command timed out!")
-
             process.kill()
+
+    def run(
+        self,
+        executor: str,
+        command: str,
+        timeout: int = 5,
+        shell: bool = False,
+        env: Optional[Dict[str, str]] = None,
+        cwd: Optional[str] = None,
+    ) -> None:
+        """Runs the provided command string using the provided executor.
+
+        There are several executors that can be used: sh, bash, powershell and cmd
+
+        Args:
+            executor (str): The executor to use when executing the provided command string.
+            command (str): The command string to run.
+            timeout (int, optional): Timeout when running a command. Defaults to 5.
+            shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
+            env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
+            cwd (str, optional): The current working directory. Defaults to None.
+        """
+        self.__logger.info("Checking for AWS CLI tools...")
+        self._run(executor=executor, command="aws --version", timeout=timeout, shell=shell, env=env, cwd=cwd)
+        self.__logger.info("AWS CLI tools found. Starting to run command...")
+        self._run(executor=executor, command=command, timeout=timeout, shell=shell, env=env, cwd=cwd)

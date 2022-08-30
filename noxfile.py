@@ -28,9 +28,9 @@ nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     "pre-commit",
     "safety",
-    "mypy",
+    # "mypy",
     "tests",
-    "typeguard",
+    # "typeguard",
     "xdoctest",
     "docs-build",
 )
@@ -165,7 +165,7 @@ def tests(session: Session) -> None:
             session.notify("coverage", posargs=[])
 
 
-@session(python=python_versions[0])
+@session(python=python_versions[2])
 def coverage(session: Session) -> None:
     """Produce the coverage report."""
     args = session.posargs or ["report"]
