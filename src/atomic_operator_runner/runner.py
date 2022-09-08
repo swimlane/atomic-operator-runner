@@ -81,11 +81,11 @@ class Runner(Base):
 
             return getpass.getuser()
         except Exception as e:
-            self.__logger.debug(f"Unable to retrieve username from getpass.getuser method.")
+            self.__logger.debug(f"Unable to retrieve username from getpass.getuser method. {e}")
         try:
             return os.getlogin()
         except Exception as e:
-            self.__logger.debug(f"Unable to retrieve username from os.getlogin method.")
+            self.__logger.debug(f"Unable to retrieve username from os.getlogin method. {e}")
         return "Unknown"
 
     def run(
