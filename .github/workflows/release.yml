@@ -34,7 +34,8 @@ jobs:
         with:
           version-command: |
             bash -o pipefail -c "poetry version | awk '{ print \$2 }'"
-          tag-template: {VERSION}
+          tag-template: |
+            {VERSION}
       - name: Create bump and changelog
         id: cz
         # if: "!startsWith(github.event.head_commit.message, 'bump:')"
