@@ -70,6 +70,24 @@ class Runner(Base):
         """Returns JSON of the RunnerResponse class object."""
         print(self.response.json())
 
+    def _get_username(self) -> str:
+        """Attempts to determine the current logged in user name.
+
+        Returns:
+            str: A username string.
+        """
+        try:
+            import getpass
+
+            return getpass.getuser()
+        except Exception as e:
+            self.__logger.debug(f"Unable to retrieve username from getpass.getuser method.")
+        try:
+            return os.getlogin()
+        except Exception as e:
+            self.__logger.debug(f"Unable to retrieve username from os.getlogin method.")
+        return "Unknown"
+
     def run(
         self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
     ) -> List[str]:
@@ -89,7 +107,7 @@ class Runner(Base):
             environment=TargetEnvironment(
                 platform=Base.config.platform,
                 hostname=Base.config.hostname if Base.config.hostname else platform.node(),
-                user=Base.config.username if Base.config.username else os.getlogin(),
+                user=Base.config.username if Base.config.username else self._get_username(),
             ),
         )
         if elevation_required:
