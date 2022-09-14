@@ -1,5 +1,5 @@
 [tool.commitizen]
-version = "0.1.5"
+version = "0.1.6"
 version_files = [
     "pyproject.toml:version"
 ]
