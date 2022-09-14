@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/swimlane/atomic-operator-runner/compare/0.1.9...0.1.10) (2022-09-14)
+
+
+### Bug Fixes
+
+* Updated distribute CI to trigger on published release ([8b8ef87](https://github.com/swimlane/atomic-operator-runner/commit/8b8ef8793578bff13cd184fbdde625b1856a992e))
+
 ## [0.1.9](https://github.com/swimlane/atomic-operator-runner/compare/0.1.8...0.1.9) (2022-09-14)
 
 
