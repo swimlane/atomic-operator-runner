@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "atomic-operator-runner"
-version = "0.1.8"
+version = "0.1.10"
 description = "atomic-operator-runner"
 authors = ["Josh Rickard <rickardja@live.com>"]
 license = "MIT"
@@ -53,6 +53,9 @@ myst-parser = {version = ">=0.16.1"}
 [tool.poetry.scripts]
 atomic-operator-runner = "atomic_operator_runner.__main__:main"
 
+[tool.poetry.group.dev.dependencies]
+commitizen = "^2.32.7"
+
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 tests = ["tests", "*/tests"]
@@ -79,7 +82,7 @@ show_error_codes = true
 show_error_context = true
 
 [tool.commitizen]
-version = "0.1.7"
+version = "0.1.10"
 version_files = [
     "pyproject.toml:version"
 ]
