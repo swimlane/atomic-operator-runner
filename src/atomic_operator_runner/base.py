@@ -1,6 +1,7 @@
 """Base class for all classes in this project."""
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
+import inspect
 import platform
 from typing import Dict
 
@@ -45,3 +46,20 @@ class Base(metaclass=LoggingBase):
         if os_name == "darwin":
             return "macos"
         return os_name
+
+    def log(self, val, level="info") -> None:
+        """Used to centralize logging across components.
+
+        We identify the source of the logging class by inspecting the calling stack.
+
+        Args:
+            val (str): The log value string to output.
+            level (str, optional): The log level. Defaults to "info".
+        """
+        component = None
+        parent = inspect.stack()[1][0].f_locals.get("self", None)
+        component = parent.__class__.__name__
+        try:
+            getattr(getattr(parent, f"_{component}__logger"), level)(val)
+        except AttributeError as ae:
+            getattr(self.__logger, level)(val + ae)
