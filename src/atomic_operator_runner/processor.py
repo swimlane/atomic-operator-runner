@@ -42,7 +42,7 @@ class Processor(Base):
         Args:
             data (Any): Data to build a BaseRecord from.
         """
-        record: Union[BaseRecord, List[BaseRecord]]
+        record: Union[BaseRecord, List[BaseRecord]] = None
         if isinstance(data, dict):
             try:
                 record = BaseRecord(**data)
