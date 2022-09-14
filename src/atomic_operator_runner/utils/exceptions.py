@@ -24,7 +24,7 @@ class IncorrectExecutorError(Exception):
         Base().log(
             val=f"The provided executor of '{provided_executor}' is not one of "
             f"{','.join([k for k in Base.COMMAND_MAP.keys()])}",
-            level="critical"
+            level="critical",
         )
 
 
@@ -37,7 +37,7 @@ class IncorrectPlatformError(Exception):
 
         Base().log(
             f"The provided platform of '{provided_platform}' is not one of macos, linux, windows or aws",
-            level="critical"
+            level="critical",
         )
 
 
