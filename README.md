@@ -1,5 +1,7 @@
 # atomic-operator-runner
 
+> Current Release ![Current Release](https://img.shields.io/github/v/release/swimlane/atomic-operator-runner)
+
 [![PyPI](https://img.shields.io/pypi/v/atomic-operator-runner.svg)][pypi status]
 [![Status](https://img.shields.io/pypi/status/atomic-operator-runner.svg)][pypi status]
 [![Python Version](https://img.shields.io/pypi/pyversions/atomic-operator-runner)][pypi status]
