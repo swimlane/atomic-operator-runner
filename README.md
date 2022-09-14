@@ -5,7 +5,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/atomic-operator-runner)][pypi status]
 [![License](https://img.shields.io/pypi/l/atomic-operator-runner)][license]
 
-[![Tests](https://github.com/swimlane/atomic-operator-runner/workflows/Tests/badge.svg)][tests]
+[![Code Quality & Tests](https://github.com/swimlane/atomic-operator-runner/actions/workflows/tests.yml/badge.svg)](https://github.com/swimlane/atomic-operator-runner/actions/workflows/tests.yml)
 [![Codecov](https://codecov.io/gh/swimlane/atomic-operator-runner/branch/main/graph/badge.svg)][codecov]
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)][pre-commit]
