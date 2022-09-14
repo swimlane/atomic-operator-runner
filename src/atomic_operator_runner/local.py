@@ -7,7 +7,8 @@ from typing import Optional
 
 from .base import Base
 from .processor import Processor
-from .utils.exceptions import IncorrectExecutorError, IncorrectPlatformError
+from .utils.exceptions import IncorrectExecutorError
+from .utils.exceptions import IncorrectPlatformError
 
 
 class LocalRunner(Base):
@@ -33,6 +34,10 @@ class LocalRunner(Base):
             shell (bool, optional): Whether to spawn a new shell or not. Defaults to False.
             env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
             cwd (str, optional): The current working directory. Defaults to None.
+
+        Raises:
+            IncorrectExecutorError: Raises when an incorrect executor is provided
+            IncorrectPlatformError: Raised when an incorrect platform is provided
         """
         if not self.COMMAND_MAP.get(executor):
             raise IncorrectExecutorError(provided_executor=executor)

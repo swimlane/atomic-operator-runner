@@ -62,4 +62,4 @@ class Base(metaclass=LoggingBase):
         try:
             getattr(getattr(parent, f"_{component}__logger"), level)(val)
         except AttributeError as ae:
-            getattr(self.__logger, level)(val)
+            getattr(self.__logger, level)(val + ae)
