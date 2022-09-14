@@ -7,6 +7,7 @@ from typing import Optional
 
 from .base import Base
 from .processor import Processor
+from .utils.exceptions import IncorrectExecutorError, IncorrectPlatformError
 
 
 class LocalRunner(Base):
@@ -33,9 +34,14 @@ class LocalRunner(Base):
             env (dict, optional): Environment to use including environmental variables.. Defaults to os.environ.
             cwd (str, optional): The current working directory. Defaults to None.
         """
+        if not self.COMMAND_MAP.get(executor):
+            raise IncorrectExecutorError(provided_executor=executor)
+        if not self.COMMAND_MAP.get(executor).get(Base.config.platform):
+            raise IncorrectPlatformError(provided_platform=Base.config.platform)
+        _executor = self.COMMAND_MAP[executor][Base.config.platform]
         self.__logger.debug("Starting a subprocess on the local system.")
         process = subprocess.Popen(
-            executor,
+            _executor,
             shell=shell,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -48,7 +54,7 @@ class LocalRunner(Base):
             outs, errs = process.communicate(bytes(command, "utf-8") + b"\n", timeout=timeout)
             # Adding details to our object response object
             Processor(
-                command=command, executor=executor, return_code=process.returncode, output=str(outs), errors=str(errs)
+                command=command, executor=_executor, return_code=process.returncode, output=str(outs), errors=str(errs)
             )
         except subprocess.TimeoutExpired as e:
             if e.output:
