@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/swimlane/atomic-operator-runner/compare/0.1.9...0.2.0) (2023-02-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* Adding the ability to copy a file from local to a remote host
+
+### Features
+
+* Added two new methods to remote.py to copy files to windows and nix based hosts ([fdbff59](https://github.com/swimlane/atomic-operator-runner/commit/fdbff59341002605559717a753773fe65166ddaa))
+* Adding new execption types for coping of files to a remote host ([84ca533](https://github.com/swimlane/atomic-operator-runner/commit/84ca533e1df8d6fef737d02f063477278b6f05fe))
+* Adding the ability to copy a file from local to a remote host ([3134779](https://github.com/swimlane/atomic-operator-runner/commit/3134779ead94d0ae7023c90e63f6dcd6e87c2943))
+
+
+### Bug Fixes
+
+* Updated distribute CI to trigger on published release ([8b8ef87](https://github.com/swimlane/atomic-operator-runner/commit/8b8ef8793578bff13cd184fbdde625b1856a992e))
+* Updating format based on pre-commit hooks and code quality standards ([71a8be3](https://github.com/swimlane/atomic-operator-runner/commit/71a8be31dcb9857d50437b564e732db2f7f8c4f2))
+
 ## [0.1.9](https://github.com/swimlane/atomic-operator-runner/compare/0.1.8...0.1.9) (2022-09-14)
 
 
