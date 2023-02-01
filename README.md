@@ -25,6 +25,7 @@
 - Execute a command for PowerShell, command-line (cmd) and bash/sh on any of the above systems
 - Can execute commands elevated on the supported systems
 - Returns a standard response object, as well as displays a formatter version to the console via logging
+- Copy a file from a local to remote host
 
 ### Response Object
 

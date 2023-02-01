@@ -128,7 +128,9 @@ class Runner(Base):
         self.responses.append(self.response)
         return [x.json() for x in self.responses]
 
-    def copy_file(self, source_file: str, destination_replacement_path: str, executor: str, elevation_required: bool = False) -> None:
+    def copy_file(
+        self, source_file: str, destination_replacement_path: str, executor: str, elevation_required: bool = False
+    ) -> None:
         """Copies the provided single file to the provided destination path.
 
         Args:
@@ -136,6 +138,10 @@ class Runner(Base):
             destination_replacement_path (str): The folder path on the destination system to place the provided file to.
             executor (str): The executor to use when running the provided command.
             elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
+
+        Raises:
+            SourceFileNotFoundError: Raised when the provided source file cannot be found or loaded.
+            SourceFileNotSupportedError: Raised when a provided file is not a supported file type.
         """
         if not os.path.exists(source_file):
             raise SourceFileNotFoundError(source_file=source_file)
@@ -143,7 +149,7 @@ class Runner(Base):
             raise SourceFileNotSupportedError(source_file=source_file)
         if Base.config.run_type == "remote":
             from .remote import RemoteRunner
-            
+
             self.log(val=f"Attempting to copy file '{source_file}' to remote host.")
             Base.response = RunnerResponse(
                 start_timestamp=datetime.now(),
@@ -155,24 +161,26 @@ class Runner(Base):
             )
             if self.config.platform == "windows":
                 response = RemoteRunner()._copy_file_to_windows(
-                    source=source_file, 
-                    desintation=destination_replacement_path, 
+                    source=source_file,
+                    desintation=destination_replacement_path,
                     executor=executor,
-                    elevation_required=elevation_required
+                    elevation_required=elevation_required,
                 )
                 if response:
                     self.log(val=f"Successfully transferred file '{source_file}' to remote windows host.")
                 else:
-                    self.log(val=f"Error occurred trying to transfer file '{source_file}' to remote host!", level="critical")
+                    self.log(
+                        val=f"Error occurred trying to transfer file '{source_file}' to remote host!", level="critical"
+                    )
             elif self.config.platform == "macos" or self.config.platform == "linux":
                 response = RemoteRunner()._copy_file_to_nix(
-                    source=source_file, 
-                    destination=destination_replacement_path, 
-                    elevation_required=elevation_required
+                    source=source_file, destination=destination_replacement_path, elevation_required=elevation_required
                 )
                 if response:
                     self.log(val=f"Successfully transferred file '{source_file}' to remote nix host.")
                 else:
-                    self.log(val=f"Error occurred trying to transfer file '{source_file}' to remote host!", level="critical")
+                    self.log(
+                        val=f"Error occurred trying to transfer file '{source_file}' to remote host!", level="critical"
+                    )
         else:
             self.log(val="We only support copying of files on remote systems.", level="warning")
