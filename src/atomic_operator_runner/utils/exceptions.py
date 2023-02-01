@@ -41,6 +41,32 @@ class IncorrectPlatformError(Exception):
         )
 
 
+class SourceFileNotSupportedError(Exception):
+    """Raised when the provided source file is not a supported type."""
+
+    def __init__(self, source_file: str) -> None:
+        """Raises when the source file is not supported."""
+        from ..base import Base
+
+        Base().log(
+            f"The provided source_file of '{source_file}' is not a supported file type.",
+            level="critical",
+        )
+
+
+class SourceFileNotFoundError(Exception):
+    """Raised when the provided source file cannot be found."""
+
+    def __init__(self, source_file: str) -> None:
+        """Raises when the source file cannot be found."""
+        from ..base import Base
+
+        Base().log(
+            f"The provided source_file of '{source_file}' is cannot be found.",
+            level="critical",
+        )
+
+
 class RemoteRunnerExecutionError(Exception):
     """Raised when an error occurs executing a command remotely."""
 

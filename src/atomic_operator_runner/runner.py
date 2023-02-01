@@ -13,6 +13,8 @@ from .models import Host
 from .models import RunnerResponse
 from .models import TargetEnvironment
 from .utils.exceptions import IncorrectPlatformError
+from .utils.exceptions import SourceFileNotFoundError
+from .utils.exceptions import SourceFileNotSupportedError
 
 
 class Runner(Base):
