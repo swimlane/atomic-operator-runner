@@ -2,6 +2,7 @@
 # Copyright: (c) 2022, Swimlane <info@swimlane.com>
 # MIT License (see LICENSE or https://opensource.org/licenses/MIT)
 import atexit
+import os
 
 from paramiko.client import AutoAddPolicy
 from paramiko.client import SSHClient
@@ -16,6 +17,60 @@ from .utils.exceptions import RemoteRunnerExecutionError
 
 class RemoteRunner(Base):
     """Used to run command remotely."""
+
+    def _copy_file_to_windows(self, source: str, desintation: str, executor: str, elevation_required: bool = False) -> bool:
+        """Copies files on Windows using PowerShell remoting (only).
+
+        Args:
+            source (str): The source file to copy to the remote host.
+            desintation (str): The destination location on the remote host to copy the file.
+            executor (str): The executor to use. Currenty we only support windows.
+            elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
+
+        Returns:
+            bool: Returns True if successful and False is not.
+        """
+        try:
+            if executor == "powershell":
+                command = f"New-Item -Path {os.path.dirname(desintation)} -ItemType Directory"
+                if elevation_required:
+                    command = f'Start-Process PowerShell -Verb RunAs; {command}'
+                output, streams, had_errors = self._get_pypsrp_client().execute_ps(command)
+                # saving the output from the execution to our RunnerResponse object
+                if isinstance(had_errors, bool):
+                    had_errors = 0 if had_errors is False else 1
+                Processor(command=command, executor=executor, return_code=had_errors, output=output, errors=streams)
+                response = self._get_pypsrp_client().copy(source, desintation)
+                return True
+        except:
+            self.__logger.warning(f'Unable to execute copy of supporting file {source}')
+            self.__logger.warning(f'Output: {output}/nStreams: {streams}/nHad Errors: {had_errors}')
+        return False
+
+    def _copy_file_to_nix(self, source: str, destination: str, elevation_required: bool = False) -> bool:
+        """Copies files on Linux/macOS using ssh remoting (only).
+
+        Args:
+            source (str): The source file to copy to the remote host.
+            desintation (str): The destination location on the remote host to copy the file.
+            elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
+
+        Returns:
+            bool: Returns True if successful and False is not.
+        """
+        atexit.register(self._close_paramiko_client)
+        file = destination.rsplit('/', 1)
+        try:
+            command = "sh -c '" + f'file="{destination}"' + ' && mkdir -p "${file%/*}" && cat > "${file}"' + "'"
+            if elevation_required:
+                command = f'sudo {command}'
+            ssh_stdin, ssh_stdout, ssh_stderr = self._get_paramiko_client().exec_command(command)
+            ssh_stdin.write(open(f'{source}', 'r').read())
+            return True
+        except:
+            self.__logger.warning(f'Unable to execute copy of supporting file {file[-1]}')
+            self.__logger.warning(f'STDIN: {ssh_stdin}/nSTDOUT: {ssh_stdout}/nSTDERR: {ssh_stderr}')
+        return False
 
     def _get_paramiko_client(self) -> SSHClient:
         """Creates a paramiko client object."""
