@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/swimlane/atomic-operator-runner/compare/0.2.0...0.2.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* Updating dependencies ([7d41ed5](https://github.com/swimlane/atomic-operator-runner/commit/7d41ed56d39962423917ba41ea9614f0e4bd6e93))
+
 ## [0.2.0](https://github.com/swimlane/atomic-operator-runner/compare/0.1.9...0.2.0) (2023-02-01)
 
 
