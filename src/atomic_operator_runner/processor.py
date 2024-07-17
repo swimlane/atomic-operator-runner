@@ -127,7 +127,9 @@ class Processor(Base):
                 f"\n\nCommand: {self.response.command} returned exit code {self.response.return_code}"
             )
             for item in self.response.records:
-                if item.extra and item.extra.get("exception"):
+                if item is None:
+                    self.__logger.info("(No output found)")
+                elif item.extra and item.extra.get("exception"):
                     self.__logger.warning(f"\n{self._clean_output(item.extra['exception'])}")
                 elif item.message_data:
                     self.__logger.warning(f"\n{self._clean_output(item.message_data)}")

@@ -93,7 +93,7 @@ class Runner(Base):
 
     def run(
         self, command: str, executor: str, cwd: Optional[str] = None, elevation_required: bool = False
-    ) -> List[str]:
+    ) -> List[dict]:
         """Runs the provided command either locally or remotely based on the provided configuration information.
 
         Args:
@@ -103,7 +103,7 @@ class Runner(Base):
             elevation_required (bool, optional): Whether or not elevation is required. Defaults to False.
 
         Returns:
-            List[str]: Returns a list of dictionaries of the command results, including any errors.
+            List[dict]: Returns a list of dictionaries of the command results, including any errors.
         """
         Base.response = RunnerResponse(
             start_timestamp=datetime.now(),
@@ -125,8 +125,8 @@ class Runner(Base):
 
             RemoteRunner().run(executor=executor, command=command)
         atexit.unregister(self._return_response)
-        self.responses.append(self.response)
-        return [x.json() for x in self.responses]
+        self.responses.append(self.response.__dict__)
+        return self.responses
 
     def copy_file(
         self, source_file: str, destination_replacement_path: str, executor: str, elevation_required: bool = False

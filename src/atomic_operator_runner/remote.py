@@ -134,7 +134,7 @@ class RemoteRunner(Base):
                 if isinstance(had_errors, bool):
                     had_errors = 0 if had_errors is False else 1
                 Processor(command=command, executor=executor, return_code=had_errors, output=output, errors=streams)
-            elif executor == "cmd":
+            elif executor == "cmd" or executor == "command_prompt":
                 stdout, stderr, rc = self._get_pypsrp_client().execute_cmd(command)
                 Processor(command=command, executor=executor, return_code=rc, output=stdout, errors=stderr)
             elif executor == "sh" or executor == "bash":
